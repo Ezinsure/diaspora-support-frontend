@@ -177,26 +177,6 @@ export default async function ServicePage({ params }: Props) {
           <FeeBreakdown caption={`${service.name}: fees`} governmentFee={service.governmentFee} />
         </div>
       </section>
-
-      {/* CTA */}
-      <section className="bg-title py-16 text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-white sm:text-3xl">Ready to get started?</h2>
-            <p className="mt-2 text-white/75">Tell us what you need. A member of our team will guide you.</p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <a href={waLink} target="_blank" rel="noopener noreferrer"
-              className={cn(buttonVariants({ size: "lg" }), "h-12 gap-2.5 rounded-full bg-green-700 px-7 text-base text-white hover:bg-green-800")}>
-              <WhatsAppIcon className="h-5 w-5" /> Get support on WhatsApp
-            </a>
-            <Link href="/contact"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-12 rounded-full border-white/40 bg-transparent px-7 text-base text-white hover:bg-white/10 hover:text-white")}>
-              Start my request
-            </Link>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
