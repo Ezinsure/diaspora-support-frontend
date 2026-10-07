@@ -1,4 +1,4 @@
-import { WHATSAPP_URL } from "@/src/lib/site";
+import { WHATSAPP_URL } from "@/lib/site";
 import { WhatsAppIcon } from "../icons/WhatsAppIcon";
 
 

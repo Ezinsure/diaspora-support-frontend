@@ -1,4 +1,4 @@
-import DashboardShell from "@/src/components/shared/DashboardShell";
+import DashboardShell from "@/components/shared/DashboardShell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

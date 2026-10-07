@@ -1,9 +1,9 @@
 
-import Options from "@/src/components/marketing/Options";
+import Options from "@/components/marketing/Options";
 import HowItWorks from "./landing/HowItWorks";
 import LandingPage from "./landing/page";
 import Services from "./landing/Services";
-import Pricing from "@/src/components/marketing/Pricing";
+import Pricing from "@/components/marketing/Pricing";
 
 const HomePage = () => {
   return (

@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { ChevronDown, Info } from "lucide-react";
-import { buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/lib/utils";
-import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
-import { WHATSAPP_URL } from "@/src/lib/site";
-import HomeImage from '@/src/assets/images/bgimage.png'
+import { buttonVariants } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { WHATSAPP_URL } from "@/lib/site";
+import HomeImage from '@/assets/images/bgimage.png'
+import { cn } from "../../../../lib/utils";
 
 const LandingPage = () => {
     return (

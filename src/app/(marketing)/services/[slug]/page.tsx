@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Check, ChevronRight, ExternalLink, FileText, X } from "lucide-react";
-import { buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/lib/utils";
-import { getServiceContent, serviceContent, sharedContent } from "@/src/lib/ServiiceContent";
-import { GUARANTEE_TEXT, PRICING, whatsappLink } from "@/src/lib/site";
-import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
-import FeeBreakdown from "@/src/components/marketing/FeeBreakdown";
+import { buttonVariants } from "@/components/ui/button";
+import { getServiceContent, serviceContent, sharedContent } from "@/lib/ServiiceContent";
+import { GUARANTEE_TEXT, PRICING, whatsappLink } from "@/lib/site";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import FeeBreakdown from "@/components/marketing/FeeBreakdown";
+import { cn } from "../../../../../lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
 

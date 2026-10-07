@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Check, CircleDot, FileText, Mail, MessageSquareText } from "lucide-react";
-import { buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import { WHATSAPP_URL } from "./site";
 import { WhatsAppIcon } from "../components/icons/WhatsAppIcon";
+import { cn } from "../../lib/utils";
 
 const steps = [
   {

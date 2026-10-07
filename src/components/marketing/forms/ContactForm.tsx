@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, ShieldAlert } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { services, WHATSAPP_URL } from "@/src/lib/site";
-import { Textarea } from "@/src/components/ui/textarea";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { services, WHATSAPP_URL } from "@/lib/site";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Status = "idle" | "sending" | "sent" | "error";
 

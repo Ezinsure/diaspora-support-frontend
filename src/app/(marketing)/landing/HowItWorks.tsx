@@ -1,4 +1,4 @@
-import HowItWorks from "@/src/lib/HowItWorks";
+import HowItWorks from "@/lib/HowItWorks";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

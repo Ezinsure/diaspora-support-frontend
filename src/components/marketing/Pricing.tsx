@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
-import { GUARANTEE_TEXT, PRICING } from "@/src/lib/site";
+import { GUARANTEE_TEXT, PRICING } from "@/lib/site";
 import FeeBreakdown from "./FeeBreakdown";
 
 const promises = [
