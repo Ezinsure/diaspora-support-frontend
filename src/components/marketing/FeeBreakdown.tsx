@@ -1,6 +1,6 @@
 // src/components/site/FeeBreakdown.tsx
 // Always shows our fee and the government fee as two separate lines.
-import { PRICING } from "@/src/lib/site";
+import { PRICING } from "@/lib/site";
 import { Building2, Headset } from "lucide-react";
 
 export default function FeeBreakdown({

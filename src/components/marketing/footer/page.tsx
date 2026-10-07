@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { CONTACT, navLinks, services, SUPPORT, WHATSAPP_DISPLAY, WHATSAPP_URL } from "@/src/lib/site";
-import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
+import { CONTACT, navLinks, services, SUPPORT, WHATSAPP_DISPLAY, WHATSAPP_URL } from "@/lib/site";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const FooterPage = () => {
   const year = new Date().getFullYear();

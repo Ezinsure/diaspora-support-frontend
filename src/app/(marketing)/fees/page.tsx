@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { PRICING } from "@/src/lib/site";
-import Pricing from "@/src/components/marketing/Pricing";
+import { PRICING } from "@/lib/site";
+import Pricing from "@/components/marketing/Pricing";
 
 export const metadata: Metadata = {
   title: "Fees",
@@ -34,6 +34,7 @@ export default function FeesPage() {
   return (
     <main>
       <Pricing as="h1" showLink={false} />
+
 
       <section className="py-20 lg:py-24">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
