@@ -4,7 +4,7 @@ import { buttonVariants } from "@/src/components/ui/button";
 import { cn } from "@/lib/utils";
 import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
 import { CONTACT, SUPPORT, WHATSAPP_DISPLAY, WHATSAPP_LABEL, WHATSAPP_URL } from "@/src/lib/site";
-import ContactForm from "@/src/components/forms/ContactForm";
+import ContactForm from "@/src/components/marketing/forms/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact us",

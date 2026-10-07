@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { getServiceContent, serviceContent, sharedContent } from "@/src/lib/ServiiceContent";
 import { GUARANTEE_TEXT, PRICING, whatsappLink } from "@/src/lib/site";
 import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
-import FeeBreakdown from "@/src/components/site/FeeBreakdown";
+import FeeBreakdown from "@/src/components/marketing/FeeBreakdown";
 
 type Props = { params: Promise<{ slug: string }> };
 

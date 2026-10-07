@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Pricing from "@/src/components/site/Pricing";
 import { PRICING } from "@/src/lib/site";
+import Pricing from "@/src/components/marketing/Pricing";
 
 export const metadata: Metadata = {
   title: "Fees",

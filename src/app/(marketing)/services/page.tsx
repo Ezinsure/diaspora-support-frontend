@@ -1,6 +1,6 @@
+import Options from "@/src/components/marketing/Options";
+import Services from "@/src/components/marketing/Services";
 import type { Metadata } from "next";
-import Services from "@/src/components/site/Services";
-import Options from "@/src/components/site/Options";
 
 export const metadata: Metadata = {
   title: "Our services",

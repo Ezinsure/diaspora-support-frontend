@@ -42,21 +42,21 @@ export const services = [
     title: "Birth Certificate Services",
     href: "/services/birth-certificate",
     icon: FileBadge,
-    image: "/images/passpoort.png",
+    image: "/images/birthcertimg.png",
     description: "Application, certified copies, corrections and updates.",
   },
   {
     title: "National ID Services",
     href: "/services/national-id",
     icon: IdCard,
-    image: "/images/passpoort.png",
+    image: "/images/idimage.png",
     description: "New application, replacement, corrections and updates.",
   },
   {
     title: "Notification Services",
     href: "/services/notification",
     icon: BellRing,
-    image: "/images/passpoort.png",
+    image: "/images/notificatimg.png",
     description:
       "Notifications, attestations and other official communications.",
   },
@@ -79,3 +79,5 @@ export const PRICING = {
 
 export const GUARANTEE_TEXT =
   "Our guarantee applies to the support service we provide, not to the decision or processing time of any government institution. If we fail to provide the agreed support service, our service-fee refund terms will apply.";
+
+export const SITE_URL = "https://www.your-domain.com"; // TODO: real domain, no trailing slash
