@@ -15,8 +15,8 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/src/components/ui/sheet";
 import { buttonVariants } from "@/src/components/ui/button";
 import { cn } from "@/lib/utils";
-import { WhatsAppIcon } from "../../icons/WhatsAppIcon";
 import { navLinks, services, WHATSAPP_URL } from "@/src/lib/site";
+import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
 
 const linkBase =
     "relative inline-flex h-9 items-center rounded-md px-3 text-[0.94rem] text-ink/75 transition-colors hover:text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-title/40";
