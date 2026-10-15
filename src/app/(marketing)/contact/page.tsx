@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/lib/utils";
-import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
-import { CONTACT, SUPPORT, WHATSAPP_DISPLAY, WHATSAPP_LABEL, WHATSAPP_URL } from "@/src/lib/site";
-import ContactForm from "@/src/components/marketing/forms/ContactForm";
+import { buttonVariants } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { CONTACT, SUPPORT, WHATSAPP_DISPLAY, WHATSAPP_LABEL, WHATSAPP_URL } from "@/lib/site";
+import ContactForm from "@/components/marketing/forms/ContactForm";
+import { cn } from "../../../../lib/utils";
 
 export const metadata: Metadata = {
   title: "Contact us",

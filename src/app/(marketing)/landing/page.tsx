@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { ChevronDown, Info } from "lucide-react";
-import { buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/lib/utils";
-import { WhatsAppIcon } from "@/src/components/icons/WhatsAppIcon";
-import { WHATSAPP_URL } from "@/src/lib/site";
-import HomeImage from '@/src/assets/images/bgimage.png'
+import { buttonVariants } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { WHATSAPP_URL } from "@/lib/site";
+import HomeImage from '@/assets/images/bgimage.png'
+import { cn } from "../../../../lib/utils";
 
 const LandingPage = () => {
     return (
@@ -25,9 +25,11 @@ const LandingPage = () => {
                             aria-hidden
                             className="absolute -inset-x-10 -inset-y-12 -z-10 rounded-[3rem] bg-white/80 blur-2xl"
                         />
-                        <h1 className="text-[2.5rem] font-semibold leading-[1.06] tracking-[-0.02em] sm:text-[3.4rem] lg:text-[3.9rem]">
-                            Government Services Made Easier  for <br /> the Diaspora
-                        </h1>
+                        <div className="max-w-xl">
+                            <h1 className="text-[2.5rem] font-semibold leading-[1.06] tracking-[-0.02em] sm:text-[3.4rem] lg:text-[3.9rem] text-balance">
+                                Rwanda Services Made Easier for the Diaspora
+                            </h1>
+                        </div>
 
                         <div aria-hidden className="mt-2 h-[3px] w-14 rounded-full bg-clay-600" />
 

@@ -1,6 +1,4 @@
-// src/components/site/FeeBreakdown.tsx
-// Always shows our fee and the government fee as two separate lines.
-import { PRICING } from "@/src/lib/site";
+import { PRICING } from "@/lib/site";
 import { Building2, Headset } from "lucide-react";
 
 export default function FeeBreakdown({
@@ -29,7 +27,7 @@ export default function FeeBreakdown({
         <div className="flex items-start gap-4 pt-5">
           <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-ink/50" />
           <div className="flex-1">
-            <dt className="font-semibold text-ink">Government fee</dt>
+            <dt className="font-semibold text-ink">Standard service fees</dt>
             <dd className="mt-0.5 text-sm text-ink/60">Set by the relevant institution, separate from our fee</dd>
           </div>
           <dd className="shrink-0 text-right text-ink/70">{governmentFee}</dd>

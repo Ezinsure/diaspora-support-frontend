@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
-import { GUARANTEE_TEXT, PRICING } from "@/src/lib/site";
+import { GUARANTEE_TEXT, PRICING } from "@/lib/site";
 import FeeBreakdown from "./FeeBreakdown";
 
 const promises = [
@@ -61,7 +61,7 @@ export default function Pricing({
           <div>
             <FeeBreakdown />
             <p className="mt-4 px-2 text-sm text-ink/60">
-              Our fee and any government fee are always shown as two separate lines.
+              Our fee and any standard service fee are always shown as two separate lines.
             </p>
           </div>
         </div>

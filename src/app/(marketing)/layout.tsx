@@ -1,6 +1,6 @@
-import FooterPage from "@/src/components/marketing/footer/page";
-import SiteHeader from "@/src/components/marketing/header/page";
-import WhatsAppFloat from "@/src/components/marketing/WhatsappFloat";
+import FooterPage from "@/components/marketing/footer/page";
+import SiteHeader from "@/components/marketing/header/page";
+import WhatsAppFloat from "@/components/marketing/WhatsappFloat";
 
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {

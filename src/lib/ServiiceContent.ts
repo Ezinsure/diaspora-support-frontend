@@ -29,8 +29,8 @@ export const sharedContent = {
     "Direct WhatsApp access to our team",
   ],
   notIncluded: [
-    "Guaranteed government approval",
-    "Bypassing any government requirement",
+    "Guaranteed official approval",
+    "Bypassing any  requirement",
     "Unofficial shortcuts",
     "Preferential treatment",
   ],

@@ -1,5 +1,5 @@
-import Options from "@/src/components/marketing/Options";
-import Services from "@/src/components/marketing/Services";
+import Options from "@/components/marketing/Options";
+import Services from "@/components/marketing/Services";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -2,10 +2,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { WHATSAPP_URL, services } from "../lib/site";
 import { buttonVariants } from "../components/ui/button";
 import { WhatsAppIcon } from "../components/icons/WhatsAppIcon";
+import { cn } from "../../lib/utils";
 
 export const metadata: Metadata = {
     title: "Page not found",

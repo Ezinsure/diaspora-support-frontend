@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Check, CircleDot, FileText, Mail, MessageSquareText } from "lucide-react";
-import { buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import { WHATSAPP_URL } from "./site";
 import { WhatsAppIcon } from "../components/icons/WhatsAppIcon";
+import { cn } from "../../lib/utils";
 
 const steps = [
   {
@@ -26,7 +26,7 @@ const steps = [
     title: "We guide and follow up",
     summary: "We check your documents and follow the progress of your request.",
     detail:
-      "Within the limits of what we're authorized to do, we check your documents, help you prepare what's needed and keep track of your request. Decisions and processing times remain with the relevant government institution.",
+      "Within the limits of what we're authorized to do, we check your documents, help you prepare what's needed and keep track of your request. Decisions and processing times remain with the relevant designated institution .",
     Visual: FollowUpVisual,
   },
   {
