@@ -13,8 +13,8 @@ const details = [
     a: "Our private assistance: reviewing your case, a document checklist, guidance, help with the application where we are authorized, follow-up and updates on WhatsApp.",
   },
   {
-    q: "Is the government fee included?",
-    a: "No. Government fees, where applicable, are set by the relevant institution and are always separate from our fee.",
+    q: "Is the standard service fees included?",
+    a: "No. standard service fees, where applicable, are set by the relevant institution and are always separate from our fee.",
   },
   {
     q: "Why “from” USD 50?",
@@ -26,7 +26,7 @@ const details = [
   },
   {
     q: "What does the guarantee cover?",
-    a: "The support service we provide. It does not cover government decisions or processing times, which we do not control. If we fail to provide the agreed support, our written refund terms apply.",
+    a: "The support service we provide. It does not cover regulatory decisions or processing times, which we do not control. If we fail to provide the agreed support, our written refund terms apply.",
   },
 ];
 

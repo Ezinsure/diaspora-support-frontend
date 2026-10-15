@@ -60,7 +60,7 @@ export default function DashboardShell({
             : config.title;
 
     const sidebar = (
-        <div className="flex h-full flex-col">
+        <div className="flex h-full flex-col ">
             <Link href={config.home} className="flex items-center justify-center gap-3 px-3 pt-1">
                 <Image src="/logo.png" alt="" width={70} height={30} className="rounded-2xl" />
             </Link>

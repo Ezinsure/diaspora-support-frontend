@@ -51,7 +51,7 @@ export default async function ServicePage({ params }: Props) {
 
             <div className="flex flex-col gap-3 lg:items-end">
               <p className="text-sm text-ink/60">
-                Support from <span className="font-semibold text-title">{PRICING.supportFrom}</span> · Government fee separate
+                Support from <span className="font-semibold text-title">{PRICING.supportFrom}</span>. Standard Service Fees Separate
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a href={waLink} target="_blank" rel="noopener noreferrer"
@@ -75,7 +75,7 @@ export default async function ServicePage({ params }: Props) {
           <div>
             <h2 className="text-2xl font-semibold sm:text-3xl">Can I do this myself?</h2>
             <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink/75">
-              Yes. You can apply directly through the official government channel without using our service.
+              Yes. You can apply directly through the official designated channel without using our service.
               We&apos;re here if you&apos;d prefer support.
             </p>
             {service.official.url ? (
@@ -169,7 +169,7 @@ export default async function ServicePage({ params }: Props) {
           <div>
             <h2 className="text-2xl font-semibold sm:text-3xl">Fees</h2>
             <p className="mt-3 max-w-md leading-relaxed text-ink/75">
-              Our fee and any government fee are always shown separately. We confirm your exact fee before we start,
+              Our fee and any standard service fee are always shown separately. We confirm your exact fee before we start,
               and there are no hidden charges.
             </p>
             <p className="mt-6 max-w-md border-l-2 border-title pl-4 text-sm leading-relaxed text-ink/65">{GUARANTEE_TEXT}</p>

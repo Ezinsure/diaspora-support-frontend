@@ -18,7 +18,7 @@ export type Company = {
 export const mockCompany: Company = {
   name: "Diaspora Services",
   about:
-    "A private company providing optional professional assistance to Rwandans abroad with selected government-service processes.",
+    "A private company providing optional professional assistance to Rwandans abroad with selected public-service processes.",
   logo: null,
   website: "https://www.example.com",
   email: "hello@example.com",
@@ -90,7 +90,7 @@ export const mockOtherFees: OtherFee[] = [
 export type FaqItem = { id: string; question: string; answer: string };
 
 export const mockFaqs: FaqItem[] = [
-  { id: "q1", question: "Is this a government website?", answer: "No. We are an independent private company. Our services are optional, and you can always apply directly through official channels." },
-  { id: "q2", question: "How much does your support cost?", answer: "Support starts from USD 50 per request. Government fees, where applicable, are separate from our fee." },
-  { id: "q3", question: "Can you guarantee approval?", answer: "No. Decisions and processing times remain with the relevant government institution. Our guarantee applies to the support service we provide." },
+  { id: "q1", question: "Is this a public website?", answer: "No. We are an independent private company. Our services are optional, and you can always apply directly through official channels." },
+  { id: "q2", question: "How much does your support cost?", answer: "Support starts from USD 50 per request. Standard service fees, where applicable, are separate from our fee." },
+  { id: "q3", question: "Can you guarantee approval?", answer: "No. Decisions and processing times remain with the relevant public institution. Our guarantee applies to the support service we provide." },
 ];

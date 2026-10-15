@@ -26,7 +26,7 @@ const steps = [
     title: "We guide and follow up",
     summary: "We check your documents and follow the progress of your request.",
     detail:
-      "Within the limits of what we're authorized to do, we check your documents, help you prepare what's needed and keep track of your request. Decisions and processing times remain with the relevant government institution.",
+      "Within the limits of what we're authorized to do, we check your documents, help you prepare what's needed and keep track of your request. Decisions and processing times remain with the relevant designated institution .",
     Visual: FollowUpVisual,
   },
   {

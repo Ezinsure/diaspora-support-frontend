@@ -62,7 +62,7 @@ export default function FeesPage() {
 
       <p className="mt-6 flex items-start gap-2.5 rounded-xl bg-sand-100 px-4 py-3 text-sm leading-relaxed text-ink/80">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-clay-600" />
-        Government fees are not set here. They are always shown as a separate line from your support fee.
+        Standard service  fees are not set here. They are always shown as a separate line from your support fee.
       </p>
 
       <div className="mt-8">

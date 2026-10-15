@@ -15,11 +15,11 @@ const Options = () => {
                         You have options
                     </h2>
                     <p className="mt-5 max-w-md text-lg leading-relaxed text-white/75">
-                        Most government services can be applied for directly through official channels.
+                        Most  services can be applied for directly through official platforms.
                         Our service is completely optional.
                     </p>
                     <p className="mt-8 max-w-md border-l-2 border-clay-600 pl-4 text-sm leading-relaxed text-white/65">
-                        Government fees, where applicable, are separate. Our fee covers only the private
+                        Service fees, where applicable, are separate. Our fee covers only the private
                         assistance and support we provide.
                     </p>
                 </div>
@@ -28,7 +28,7 @@ const Options = () => {
                     <Choice
                         icon={Laptop}
                         title="Do it yourself"
-                        text="Apply directly through the official government channels at no additional cost , (you only pay the standard government fees, where applicable)."
+                        text="Apply directly through the official platform at no additional cost , (you only pay the standard service fees, where applicable)."
                     />
                     <Choice
                         icon={Users}

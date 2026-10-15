@@ -16,7 +16,7 @@ const FooterPage = () => {
             <p className="mt-1 text-sm text-white/60">Support. Guide. Get It Done.</p>
             <p className="mt-5 max-w-xs text-sm leading-relaxed">
               Optional, professional help for Rwandans abroad who want support with selected
-              government-service processes.
+              service processes.
             </p>
           </div>
 
@@ -80,11 +80,10 @@ const FooterPage = () => {
         <div className="mt-14 rounded-2xl border border-white/15 bg-white/[0.04] p-6 sm:p-7">
           <p className="text-sm font-semibold text-white">Please note</p>
           <p className="mt-2 text-sm leading-relaxed text-white/75">
-            This website is operated by a private service provider and is not a Government of Rwanda
-            website. Our services are optional and our fees cover professional assistance, guidance and
-            follow-up. Customers may apply directly through the appropriate official government channels
-            without using our service. Government fees, where applicable, are separate from our assistance
-            fees. Government decisions and processing times remain under the responsibility of the
+            This website is operated by a private service provider. Our services are optional and our fees cover professional assistance, guidance and
+            follow-up. Customers may apply directly through the appropriate official channels
+            without using our service. Standard service fees, where applicable, are separate from our assistance
+            fees. Official decisions and processing times remain under the responsibility of the
             relevant institution.
           </p>
         </div>
