@@ -1,235 +1,241 @@
-// src/app/admin/settings/fees/page.tsx  →  /admin/settings/fees
 "use client";
 
-import { useMemo, useState } from "react";
-import { Info, Pencil, Plus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from "react";
+import { CircleDot, Layers, Pencil, Plus, Power, PowerOff, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
-import { EmptyState, Field, PageHeader, SettingsSection, selectClass } from "@/components/admin/setting-ui";
-import { mockOtherFees, mockServices, mockStandardFees, type OtherFee, type StandardFee } from "@/lib/mock/settings";
+import { EmptyState, PageHeader, selectClass } from "@/components/admin/setting-ui";
+import ServiceFeeFormDialog from "@/components/admin/forms/feesForm";
+import { useServices } from "@/hooks/useService";
+import {
+  formatFee,
+  type ServiceFeeFormValues,
+  type ServiceFeeItem,
+  useCreateServiceFee,
+  useDeleteServiceFee,
+  useServiceFees,
+  useToggleServiceFee,
+  useUpdateServiceFee,
+} from "@/hooks/useFees";
 import { cn } from "../../../../../lib/utils";
+import SearchInput from "@/components/shared/SearchInput";
+import FilterSelect from "@/components/shared/FilterSelect";
+import FeeGroupsSkeleton from "@/components/admin/skeleton/feesSkeleton";
 
-const CURRENCY = "USD";
+const useDebounced = <T,>(value: T, delay = 350) => {
+  const [v, setV] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return v;
+};
 
-export default function FeesPage() {
-  // TODO: load from API
-  const [savedStandard, setSavedStandard] = useState<StandardFee[]>(mockStandardFees);
-  const [standard, setStandard] = useState<StandardFee[]>(mockStandardFees);
-  const [otherFees, setOtherFees] = useState<OtherFee[]>(mockOtherFees);
-  const [editing, setEditing] = useState<OtherFee | null>(null);
+const ServiceFeesPage = () => {
+  const [query, setQuery] = useState("");
+  const [serviceFilter, setServiceFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "off">("all");
+  const [editing, setEditing] = useState<ServiceFeeItem | null>(null);
+  const [defaultServiceId, setDefaultServiceId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [deleting, setDeleting] = useState<OtherFee | null>(null);
+  const [deleting, setDeleting] = useState<ServiceFeeItem | null>(null);
 
-  const isDirty = useMemo(() => JSON.stringify(standard) !== JSON.stringify(savedStandard), [standard, savedStandard]);
-  const serviceName = (id: string) => mockServices.find((s) => s.id === id)?.name ?? "Service";
+  const search = useDebounced(query);
+  const { data, isLoading, isFetching, isError } = useServiceFees({
+    search,
+    serviceId: serviceFilter,
+    isActive: statusFilter === "all" ? "all" : statusFilter === "active",
+  });
+  const { data: servicesData } = useServices();
 
-  const updateStandard = (serviceId: string, patch: Partial<StandardFee>) =>
-    setStandard((list) => list.map((f) => (f.serviceId === serviceId ? { ...f, ...patch } : f)));
+  const createFee = useCreateServiceFee();
+  const updateFee = useUpdateServiceFee();
+  const toggleFee = useToggleServiceFee();
+  const deleteFee = useDeleteServiceFee();
 
-  const saveStandard = () => {
-    if (standard.some((f) => !Number.isFinite(f.amount) || f.amount <= 0)) {
-      return toast.error("Each fee must be greater than 0.");
+  const fees = data?.fees ?? [];
+  const services = servicesData?.services ?? [];
+  const hasFilters = !!query || serviceFilter !== "all" || statusFilter !== "all";
+
+  const groups = useMemo(() => {
+    const map = new Map<string, { key: string; serviceId: string | null; title: string; fees: ServiceFeeItem[] }>();
+    for (const f of fees) {
+      const key = f.serviceId ?? "general";
+      const g = map.get(key) ?? { key, serviceId: f.serviceId, title: f.serviceName ?? "General fees", fees: [] };
+      g.fees.push(f);
+      map.set(key, g);
     }
-    setSavedStandard(standard); // TODO: API call
-    toast.success("Standard fees saved");
+    return [...map.values()].sort((a, b) => (a.serviceId === null ? -1 : b.serviceId === null ? 1 : a.title.localeCompare(b.title)));
+  }, [fees]);
+
+  const openCreate = (serviceId: string | null = null) => {
+    setEditing(null);
+    setDefaultServiceId(serviceId ?? (serviceFilter !== "all" && serviceFilter !== "none" ? serviceFilter : null));
+    setFormOpen(true);
   };
 
-  const saveOther = (data: Omit<OtherFee, "id">) => {
-    if (editing) {
-      setOtherFees((list) => list.map((f) => (f.id === editing.id ? { ...f, ...data } : f)));
-      toast.success("Fee updated");
-    } else {
-      setOtherFees((list) => [...list, { ...data, id: crypto.randomUUID() }]);
-      toast.success("Fee added");
-    }
-    setFormOpen(false);
+  const openEdit = (fee: ServiceFeeItem) => {
+    setEditing(fee);
+    setFormOpen(true);
+  };
+
+  const closeForm = (open: boolean) => {
+    setFormOpen(open);
+    if (!open) setEditing(null);
+  };
+
+
+  const save = (values: ServiceFeeFormValues) => {
+    const onSuccess = () => closeForm(false);
+    if (editing) updateFee.mutate({ id: editing.id, values }, { onSuccess });
+    else createFee.mutate(values, { onSuccess });
+  };
+
+  const confirmDelete = () => {
+    if (!deleting) return;
+    deleteFee.mutate(deleting.id, { onSettled: () => setDeleting(null) });
   };
 
   return (
     <div>
-      <PageHeader title="Fees" description="Your private support fees. These are shown on the website and in quotes." />
+      <PageHeader
+        title="Fees"
+        description="Manage the fees charged for services, including general fees and service-specific charges."
+        action={
+          <Button onClick={() => openCreate()} className="rounded-md bg-title px-4 text-white hover:bg-title/90">
+            <Plus className="h-4 w-4" /> Add Fee
+          </Button>
+        }
+      />
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <SearchInput value={query} onChange={setQuery} placeholder="Search fee or service" label="Search fees" loading={isFetching} />
 
-      <p className="mt-6 flex items-start gap-2.5 rounded-xl bg-sand-100 px-4 py-3 text-sm leading-relaxed text-ink/80">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-clay-600" />
-        Standard service  fees are not set here. They are always shown as a separate line from your support fee.
+        <FilterSelect
+          label="Service"
+          icon={Layers}
+          heading="Filter by service"
+          value={serviceFilter}
+          onChange={setServiceFilter}
+          className="sm:w-56"
+          options={[
+            { value: "all", label: "All services" },
+            ...services.map((s, i) => ({ value: s.id, label: s.name, separatorBefore: i === 0 })),
+          ]}
+        />
+
+        <FilterSelect
+          label="Status"
+          icon={CircleDot}
+          showLabel
+          value={statusFilter}
+          onChange={(v) => setStatusFilter(v as typeof statusFilter)}
+          className="sm:w-48"
+          options={[
+            { value: "all", label: "All" },
+            { value: "active", label: "Active", dot: "bg-emerald-500" },
+            { value: "off", label: "Turned off", dot: "bg-ink/30" },
+          ]}
+        />
+      </div>
+
+      <p className={cn("mt-4 text-sm text-ink/55", isFetching && !isLoading && "opacity-60")}>
+        {isLoading ? "Loading fees…" : `${data?.total ?? 0} fee${data?.total === 1 ? "" : "s"}`}
       </p>
 
-      <div className="mt-8">
-        <SettingsSection title="Standard fees" description="The support fee for each service. Mark it as a starting price to show “from” on the website.">
-          <ul className="divide-y divide-navy-300/40 rounded-2xl border border-navy-300/50 bg-white">
-            {standard.map((fee) => (
-              <li key={fee.serviceId} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-                <p className="flex-1 font-medium text-ink">{serviceName(fee.serviceId)}</p>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 text-sm text-ink/70">
-                    <input
-                      type="checkbox"
-                      checked={fee.isStartingPrice}
-                      onChange={(e) => updateStandard(fee.serviceId, { isStartingPrice: e.target.checked })}
-                      className="h-4 w-4 accent-title"
-                    />
-                    Starting price
-                  </label>
-                  <div className="flex w-36 rounded-md shadow-xs">
-                    <span className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-navy-50 px-2.5 text-xs text-ink/60">
-                      {CURRENCY}
-                    </span>
-                    <Input
-                      type="number"
-                      min={1}
-                      step={1}
-                      inputMode="decimal"
-                      aria-label={`${serviceName(fee.serviceId)} fee in ${CURRENCY}`}
-                      value={Number.isFinite(fee.amount) ? fee.amount : ""}
-                      onChange={(e) => updateStandard(fee.serviceId, { amount: e.target.valueAsNumber })}
-                      className="rounded-l-none"
-                    />
-                  </div>
+      {isError ? (
+        <div className="mt-4"><EmptyState title="Couldn't load fees" text="Check your connection and refresh the page." /></div>
+      ) : isLoading ? (
+        <FeeGroupsSkeleton />
+      ) : fees.length === 0 ? (
+        <div className="mt-4">
+          <EmptyState
+            title={hasFilters ? "No fees found" : "No fees yet"}
+            text={hasFilters ? "Try a different search or filter." : "Add a general fee (e.g. Follow-up fee) or a fee for a specific service."}
+          />
+        </div>
+      ) : (
+        <div className="mt-4 space-y-4">
+          {groups.map((g) => (
+            <section key={g.key} className="overflow-hidden rounded-2xl border border-navy-300/50 bg-white">
+              <header className="flex items-center justify-between gap-3 border-b border-navy-300/40 bg-navy-50/40 px-5 py-3">
+                <div className="min-w-0">
+                  <h2 className="truncate font-semibold text-sm lg:text-lg text-title">{g.title}</h2>
+                  <p className="text-sm text-ink/60">
+                    {g.serviceId ? "Charged for this service" : "General amount charged for a service/assistance"} · {g.fees.length} fee{g.fees.length === 1 ? "" : "s"}
+                  </p>
                 </div>
-              </li>
-            ))}
-          </ul>
+                <Button variant="ghost" size="sm" onClick={() => openCreate(g.serviceId)} className="shrink-0 text-title">
+                  <Plus className="h-4 w-4" /> Add
+                </Button>
+              </header>
 
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="outline" disabled={!isDirty} onClick={() => setStandard(savedStandard)}>Discard</Button>
-            <Button disabled={!isDirty} onClick={saveStandard} className="bg-title text-white hover:bg-title/90">Save fees</Button>
-          </div>
-        </SettingsSection>
+              <ul className="divide-y divide-navy-300/40">
+                {g.fees.map((f) => (
+                  <li key={f.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+                    <div className={cn("min-w-0 flex-1", !f.isActive && "opacity-60")}>
+                      <p className="flex flex-wrap items-center gap-2 font-medium text-ink">
+                        {f.name}
+                        {!f.isActive && (
+                          <span className="rounded-full bg-navy-50 px-2 py-0.5 text-[11px] font-medium text-ink/60 ring-1 ring-navy-300/50">Off</span>
+                        )}
+                      </p>
+                      {f.description && <p className="mt-0.5 text-base leading-relaxed text-ink/60">{f.description}</p>}
+                    </div>
 
-        <SettingsSection title="Other fees" description="Extra or optional charges. Negotiable fees are agreed with the customer before work proceeds.">
-          <div className="flex justify-end">
-            <Button variant="outline" onClick={() => { setEditing(null); setFormOpen(true); }}>
-              <Plus className="h-4 w-4" /> Add fee
-            </Button>
-          </div>
+                    <p className={cn("shrink-0 text-lg font-semibold tabular-nums text-title sm:min-w-28 sm:text-right", !f.isActive && "opacity-60")}>
+                      {formatFee(f.amount, f.currency)}
+                    </p>
 
-          {otherFees.length === 0 ? (
-            <div className="mt-4"><EmptyState title="No other fees" /></div>
-          ) : (
-            <ul className="mt-4 divide-y divide-navy-300/40 rounded-2xl border border-navy-300/50 bg-white">
-              {otherFees.map((fee) => (
-                <li key={fee.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-ink">{fee.name}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-ink/60">{fee.description}</p>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 sm:justify-end">
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
-                        fee.pricing === "negotiable"
-                          ? "bg-sand-100 text-clay-600 ring-clay-600/20"
-                          : "bg-navy-50 text-title ring-navy-300/60",
-                      )}
-                    >
-                      {fee.pricing === "negotiable" ? "Negotiable" : `${CURRENCY} ${fee.amount}`}
-                    </span>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" aria-label={`Edit ${fee.name}`} onClick={() => { setEditing(fee); setFormOpen(true); }} className="text-ink/60 hover:text-title">
+                    <div className="flex shrink-0 gap-1 self-end sm:self-auto">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={f.isActive ? `Turn off ${f.name}` : `Turn on ${f.name}`}
+                        title={f.isActive ? "Turn off" : "Turn on"}
+                        disabled={toggleFee.isPending && toggleFee.variables?.id === f.id}
+                        onClick={() => toggleFee.mutate({ id: f.id, isActive: !f.isActive })}
+                        className={f.isActive ? "text-ink/60 hover:text-amber-600" : "text-ink/60 hover:text-emerald-600"}
+                      >
+                        {f.isActive ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />}
+                      </Button>
+                      <Button variant="ghost" size="icon" aria-label={`Edit ${f.name}`} onClick={() => openEdit(f)} className="text-ink/60 hover:text-title">
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" aria-label={`Delete ${fee.name}`} onClick={() => setDeleting(fee)} className="text-ink/60 hover:text-destructive">
+                      <Button variant="ghost" size="icon" aria-label={`Delete ${f.name}`} onClick={() => setDeleting(f)} className="text-ink/60 hover:text-destructive">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SettingsSection>
-      </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
 
-      <AlertDialog open={formOpen} onOpenChange={setFormOpen}>
-        <AlertDialogContent className="sm:max-w-lg">
-          {formOpen && <OtherFeeForm key={editing?.id ?? "new"} fee={editing} onCancel={() => setFormOpen(false)} onSave={saveOther} />}
-        </AlertDialogContent>
-      </AlertDialog>
+      <ServiceFeeFormDialog
+        open={formOpen}
+        onOpenChange={closeForm}
+        fee={editing}
+        defaultServiceId={defaultServiceId}
+        onSave={save}
+        isSaving={createFee.isPending || updateFee.isPending}
+      />
 
       <ConfirmDialog
         open={!!deleting}
-        onOpenChange={(open) => !open && setDeleting(null)}
+        onOpenChange={(open) => !open && !deleteFee.isPending && setDeleting(null)}
         title="Delete fee?"
-        description={<><span className="font-medium text-ink">{deleting?.name}</span> will no longer appear in quotes.</>}
-        confirmLabel="Delete fee"
-        onConfirm={() => {
-          setOtherFees((list) => list.filter((f) => f.id !== deleting?.id)); // TODO: API call
-          toast.success("Fee deleted");
-        }}
+        description={
+          <>
+            <span className="font-medium text-ink">{deleting?.name}</span>
+            {deleting?.serviceName ? ` (${deleting.serviceName})` : ""} will no longer be available.
+          </>
+        }
+        confirmLabel={deleteFee.isPending ? "Deleting..." : "Delete fee"}
+        onConfirm={confirmDelete}
       />
     </div>
   );
-}
-
-function OtherFeeForm({
-  fee,
-  onCancel,
-  onSave,
-}: {
-  fee: OtherFee | null;
-  onCancel: () => void;
-  onSave: (data: Omit<OtherFee, "id">) => void;
-}) {
-  const [name, setName] = useState(fee?.name ?? "");
-  const [description, setDescription] = useState(fee?.description ?? "");
-  const [pricing, setPricing] = useState<OtherFee["pricing"]>(fee?.pricing ?? "fixed");
-  const [amount, setAmount] = useState<number>(fee?.amount ?? NaN);
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave({ name: name.trim(), description: description.trim(), pricing, amount: pricing === "fixed" ? amount : null });
-      }}
-    >
-      <AlertDialogHeader className="text-left">
-        <AlertDialogTitle>{fee ? "Edit fee" : "Add fee"}</AlertDialogTitle>
-        <AlertDialogDescription>Customers must accept any extra fee before work proceeds.</AlertDialogDescription>
-      </AlertDialogHeader>
-
-      <div className="grid gap-4 py-5 sm:grid-cols-2">
-        <Field label="Name" htmlFor="feeName" className="sm:col-span-2">
-          <Input id="feeName" value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} />
-        </Field>
-        <Field label="Description" htmlFor="feeDesc" className="sm:col-span-2">
-          <Textarea id="feeDesc" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={240} />
-        </Field>
-        <Field label="Pricing" htmlFor="feePricing">
-          <select id="feePricing" value={pricing} onChange={(e) => setPricing(e.target.value as OtherFee["pricing"])} className={selectClass}>
-            <option value="fixed">Fixed amount</option>
-            <option value="negotiable">Negotiable</option>
-          </select>
-        </Field>
-        {pricing === "fixed" && (
-          <Field label={`Amount (${CURRENCY})`} htmlFor="feeAmount">
-            <Input
-              id="feeAmount"
-              type="number"
-              min={1}
-              step={1}
-              value={Number.isFinite(amount) ? amount : ""}
-              onChange={(e) => setAmount(e.target.valueAsNumber)}
-              required
-            />
-          </Field>
-        )}
-      </div>
-
-      <AlertDialogFooter className="gap-2">
-        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button type="submit" className="bg-title text-white hover:bg-title/90">{fee ? "Save changes" : "Add fee"}</Button>
-      </AlertDialogFooter>
-    </form>
-  );
-}
+};
+export default ServiceFeesPage;

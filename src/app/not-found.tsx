@@ -1,4 +1,3 @@
-// src/app/not-found.tsx — shown for any unknown URL (real 404 status)
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +17,7 @@ const NotFound = () => {
             <header className="mx-auto w-full max-w-7xl px-5 py-6 sm:px-8">
                 <Link href="/" className="inline-flex items-center gap-3">
                     <Image src="/logo.png" alt="" width={40} height={40} />
-                    <span className="text-lg font-semibold text-title">Diaspora Services</span>
+                    <span className="text-lg font-semibold text-title">Diaspora Services </span>
                 </Link>
             </header>
 

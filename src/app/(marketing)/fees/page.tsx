@@ -1,23 +1,28 @@
 import type { Metadata } from "next";
-import { PRICING } from "@/lib/site";
 import Pricing from "@/components/marketing/Pricing";
+import FaqList from "@/components/marketing/FaqList";
+import { getSupportFee } from "@/lib/admin/supportFee";
 
-export const metadata: Metadata = {
-  title: "Fees",
-  description: `Support from ${PRICING.supportFrom} per request. Our fee and any government fee are always shown separately, with no hidden charges.`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { price } = await getSupportFee();
+  return {
+    title: "Fees",
+    description: `Support from ${price} per request. Our fee and any standard service fee are always shown separately, with no hidden charges.`,
+  };
+}
 
-const details = [
+// Shown until the FAQs load from the dashboard, or if none are published
+const fallbackDetails = (price: string) => [
   {
     q: "What does the support fee cover?",
     a: "Our private assistance: reviewing your case, a document checklist, guidance, help with the application where we are authorized, follow-up and updates on WhatsApp.",
   },
   {
-    q: "Is the standard service fees included?",
-    a: "No. standard service fees, where applicable, are set by the relevant institution and are always separate from our fee.",
+    q: "Are standard service fees included?",
+    a: "No. Standard service fees, where applicable, are set by the relevant institution and are always separate from our fee.",
   },
   {
-    q: "Why “from” USD 50?",
+    q: `Why “from” ${price}?`,
     a: "Cases differ. Most requests are straightforward, but some take more work. We confirm your exact fee before we start, so there are no surprises.",
   },
   {
@@ -30,23 +35,17 @@ const details = [
   },
 ];
 
-export default function FeesPage() {
+export default async function FeesPage() {
+  const { price } = await getSupportFee();
+
   return (
     <main>
       <Pricing as="h1" showLink={false} />
 
-
       <section className="py-20 lg:py-24">
-        <div className="mx-auto max-w-3xl px-5 sm:px-8">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <h2 className="text-3xl font-semibold tracking-[-0.01em]">Good to know</h2>
-          <dl className="mt-8 divide-y divide-navy-300/50 border-y border-navy-300/50">
-            {details.map(({ q, a }) => (
-              <div key={q} className="py-6">
-                <dt className="text-lg font-semibold text-title">{q}</dt>
-                <dd className="mt-2 leading-relaxed text-ink/75">{a}</dd>
-              </div>
-            ))}
-          </dl>
+          <FaqList fallback={fallbackDetails(price)} />
           {/* TODO: link to your written refund terms once published */}
         </div>
       </section>

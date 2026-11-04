@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { CONTACT, navLinks, services, SUPPORT, WHATSAPP_DISPLAY, WHATSAPP_URL } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -10,20 +11,27 @@ const FooterPage = () => {
     <footer className="bg-title text-white/80">
       <div className="mx-auto max-w-7xl px-5 pt-16 sm:px-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
-          {/* Brand */}
-          <div>
-            <p className="text-lg font-semibold text-white">Diaspora Services</p>
-            <p className="mt-1 text-sm text-white/60">Support. Guide. Get It Done.</p>
-            <p className="mt-5 max-w-xs text-sm leading-relaxed">
-              Optional, professional help for Rwandans abroad who want support with selected
+          <div className="flex flex-col items-center text-center">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo-removebg.png"
+                alt="Diaspora VIP Services Platform"
+                width={200}
+                height={80}
+                className="h-24 w-auto object-contain"
+                priority
+              />
+            </Link>
+            <p className="mt-5 max-w-xs text-base leading-relaxed">
+              Vip service for Rwandans abroad who want support with selected
               service processes.
             </p>
           </div>
 
           {/* Services */}
           <nav aria-label="Services">
-            <p className="text-sm font-semibold text-white">Services</p>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <p className="text-base font-semibold text-white">Services</p>
+            <ul className="mt-4 space-y-2.5 text-base">
               {services.map((s) => (
                 <li key={s.href}>
                   <Link href={s.href} className="hover:text-white">{s.title}</Link>
@@ -34,8 +42,8 @@ const FooterPage = () => {
 
           {/* Company */}
           <nav aria-label="Company">
-            <p className="text-sm font-semibold text-white">Company</p>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <p className="text-base font-semibold text-white">Company</p>
+            <ul className="mt-4 space-y-2.5 text-base">
               {navLinks.map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="hover:text-white">{l.label}</Link>
@@ -48,8 +56,8 @@ const FooterPage = () => {
 
           {/* Contact */}
           <div>
-            <p className="text-sm font-semibold text-white">Contact</p>
-            <ul className="mt-4 space-y-3 text-sm">
+            <p className="text-base font-semibold text-white">Contact</p>
+            <ul className="mt-4 space-y-3 text-base">
               <li>
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 hover:text-white">
                   <WhatsAppIcon className="h-4 w-4 shrink-0" /> {WHATSAPP_DISPLAY}
@@ -72,14 +80,14 @@ const FooterPage = () => {
                 <span>{CONTACT.address ?? CONTACT.city}</span>
               </li>
             </ul>
-            {SUPPORT.hours && <p className="mt-4 text-sm text-white/60">{SUPPORT.hours}</p>}
+            {SUPPORT.hours && <p className="mt-4 text-base text-white/60">{SUPPORT.hours}</p>}
           </div>
         </div>
 
         {/* Disclaimer */}
         <div className="mt-14 rounded-2xl border border-white/15 bg-white/[0.04] p-6 sm:p-7">
-          <p className="text-sm font-semibold text-white">Please note</p>
-          <p className="mt-2 text-sm leading-relaxed text-white/75">
+          <p className="text-base font-semibold text-white">Please note</p>
+          <p className="mt-2 text-base leading-relaxed text-white/75">
             This website is operated by a private service provider. Our services are optional and our fees cover professional assistance, guidance and
             follow-up. Customers may apply directly through the appropriate official channels
             without using our service. Standard service fees, where applicable, are separate from our assistance
@@ -90,7 +98,18 @@ const FooterPage = () => {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-white/10 py-6 text-xs text-white/55 sm:flex-row sm:justify-between">
           <p>© {year} Diaspora Services. All rights reserved.</p>
-          <p>Independent private company · Kigali, Rwanda</p>
+          <p>
+            Managed by{" "}
+            <a
+              href="https://solektra.rw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium cursor-pointer transition-colors hover:underline"
+            >
+              SOLEKTRA
+            </a>
+            {" "}· Kigali, Rwanda
+          </p>
         </div>
       </div>
     </footer>

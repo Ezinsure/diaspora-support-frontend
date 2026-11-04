@@ -44,8 +44,8 @@ export default function ConfirmDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={(next) => !loading && onOpenChange(next)}>
-      <AlertDialogContent className="sm:max-w-md">
-        <AlertDialogHeader className="text-left">
+      <AlertDialogContent className="sm:max-w-lg!">
+        <AlertDialogHeader className="text-left px-4">
           <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <AlertTriangle className="h-5 w-5" />
           </div>

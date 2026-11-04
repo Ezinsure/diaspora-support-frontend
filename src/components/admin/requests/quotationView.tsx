@@ -2,18 +2,9 @@
 
 import { CreditCard, Pencil, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { canMakeQuotation, canPay, formatDay, formatMoney, isPaid, quotationTotal } from "./requestStatus";
+import { canEdit, canPay, formatDay, formatMoney, isPaid, quotationTotal } from "./requestStatus";
 
-// Read-only quotation, like a small invoice
-const QuotationView = ({
-  request,
-  onEdit,
-  onPay,
-}: {
-  request: any;
-  onEdit?: () => void;
-  onPay?: () => void;
-}) => {
+const QuotationView = ({ request, onEdit, onPay }: { request: any; onEdit?: () => void; onPay?: () => void }) => {
   const q = request.quotation;
   if (!q) return null;
 
@@ -22,7 +13,7 @@ const QuotationView = ({
 
   return (
     <div className="p-5 sm:p-6">
-      <div id="quotation-print" className="space-y-5">
+      <div className="print-area space-y-5">
         <div className="flex items-start justify-between gap-4 pr-8">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Quotation</p>
@@ -36,7 +27,7 @@ const QuotationView = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2 text-xs">
           <div className="rounded-lg border border-gray-100 px-3 py-2">
             <p className="text-gray-500">Date</p>
             <p className="font-medium text-gray-900">{formatDay(q.createdAt)}</p>
@@ -89,7 +80,7 @@ const QuotationView = ({
         <Button variant="outline" className="gap-1.5" onClick={() => window.print()}>
           <Printer className="h-4 w-4" /> Print / PDF
         </Button>
-        {onEdit && canMakeQuotation(request) && (
+        {onEdit && canEdit(request) && (
           <Button variant="outline" className="gap-1.5" onClick={onEdit}>
             <Pencil className="h-4 w-4" /> Edit
           </Button>

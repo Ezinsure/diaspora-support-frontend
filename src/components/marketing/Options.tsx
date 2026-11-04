@@ -18,8 +18,8 @@ const Options = () => {
                         Most  services can be applied for directly through official platforms.
                         Our service is completely optional.
                     </p>
-                    <p className="mt-8 max-w-md border-l-2 border-clay-600 pl-4 text-sm leading-relaxed text-white/65">
-                        Service fees, where applicable, are separate. Our fee covers only the private
+                    <p className="mt-8 max-w-md border-l-2 border-clay-600 pl-4 text-lg leading-relaxed text-white">
+                        Standard Service Fees, where applicable, are separate. Our Fees covers only the private
                         assistance and support we provide.
                     </p>
                 </div>
@@ -38,7 +38,7 @@ const Options = () => {
                     <Choice
                         icon={Headset}
                         title="Let us help you"
-                        text="Professional support, document checking and follow-up. A good fit if:"
+                        text="Professional vip support, document checking and follow-up. A good fit if:"
                     >
                         <ul className="mt-4 space-y-2.5">
                             {reasons.map((reason) => (

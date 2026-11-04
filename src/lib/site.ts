@@ -22,14 +22,12 @@ export const WHATSAPP_LABEL = SUPPORT.is24x7
   : "Chat on WhatsApp";
 
 export const CONTACT = {
-  email: "support@gmail.com", // TODO
+  email: "diaspora@solektra.co",
   phone: null as string | null, // optional, e.g. "+250 788 000 000"
-  // TODO: add the exact address ONLY after the team confirms the formal wording
-  address: null as string | null,
-  city: "Kigali, Rwanda",
+  address: "KABC 6th Floor ",
+  city: "Kigali",
 };
 
-// TODO: add the images to /public/images/services/
 export const services = [
   {
     title: "Passport Services",
@@ -73,9 +71,20 @@ export const whatsappLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
 export const PRICING = {
-  // Launch wording: "from", not a fixed price for every service
-  supportFrom: "USD 50",
+  supportFeeId: process.env.NEXT_PUBLIC_SUPPORT_FEE_ID ?? "",
+  fallback: { amount: 50, currency: "USD" },
+  revalidateSeconds: 100,
+  fromLabel: "from",
+  unitLabel: "per request",
 };
+
+export const formatMoney = (amount: number, currency: string) =>
+  `${currency} ${Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+
+export const FALLBACK_PRICE = formatMoney(
+  PRICING.fallback.amount,
+  PRICING.fallback.currency,
+);
 
 export const GUARANTEE_TEXT =
   "Our guarantee applies to the support service we provide, not to the decision or processing time of any official designated institution. If we fail to provide the agreed support service, our service-fee refund terms will apply.";

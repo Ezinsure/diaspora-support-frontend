@@ -1,24 +1,17 @@
-import {
-  CircleHelp,
-  FileText,
-  FolderLock,
-  Inbox,
-  LayoutDashboard,
-  Receipt,
-  Settings,
-  UserRound,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { Inbox, LayoutDashboard, Settings, Users, type LucideIcon } from "lucide-react";
+import { hasRole, type AuthRole, type AuthUser } from "@/hooks/useAuth";
 
 export type NavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
-  badge?: string; // small label on the right, e.g. "New" or a count
+  badge?: string;
+  roles?: AuthRole[];
 };
 export type NavSection = { label: string; items: NavItem[] };
-export type DashboardArea = "portal" | "admin";
+export type DashboardArea = "admin";
+
+export const SETTINGS_ROLES: AuthRole[] = ["admin", "hr", "finance"];
 
 export const dashboardNav: Record<
   DashboardArea,
@@ -30,29 +23,6 @@ export const dashboardNav: Record<
     sections: NavSection[];
   }
 > = {
-  portal: {
-    title: "My account",
-    home: "/portal",
-    searchPlaceholder: "Search your requests…",
-    action: { label: "New request", href: "/portal/requests/new" },
-    sections: [
-      {
-        label: "Menu",
-        items: [
-          { label: "Overview", href: "/portal", icon: LayoutDashboard },
-          { label: "My requests", href: "/portal/requests", icon: FileText },
-          { label: "Documents", href: "/portal/documents", icon: FolderLock },
-          { label: "Payments", href: "/portal/payments", icon: Receipt },
-        ],
-      },
-      {
-        label: "Account",
-        items: [
-          { label: "Profile", href: "/portal/profile", icon: UserRound },
-        ],
-      },
-    ],
-  },
   admin: {
     title: "Admin",
     home: "/admin",
@@ -65,15 +35,17 @@ export const dashboardNav: Record<
           { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
           { label: "Requests", href: "/admin/requests", icon: Inbox },
           { label: "Customers", href: "/admin/customers", icon: Users },
-          { label: "Payments", href: "/admin/payments", icon: Receipt },
         ],
       },
       {
         label: "System",
-        items: [
-          { label: "Settings", href: "/admin/settings", icon: Settings },
-        ],
+        items: [{ label: "Settings", href: "/admin/settings", icon: Settings, roles: SETTINGS_ROLES }],
       },
     ],
   },
 };
+
+export const visibleSections = (sections: NavSection[], user: AuthUser | null | undefined) =>
+  sections
+    .map((s) => ({ ...s, items: s.items.filter((i) => !i.roles || hasRole(user, ...i.roles)) }))
+    .filter((s) => s.items.length > 0);

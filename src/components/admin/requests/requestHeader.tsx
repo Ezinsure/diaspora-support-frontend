@@ -4,6 +4,13 @@ import { Plus, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "../../../../lib/utils";
 import { REQUEST_STATUSES, SERVICES, TOTAL_CARD } from "./requestStatus";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 const RequestsHeader = ({
     counts,
@@ -28,23 +35,45 @@ const RequestsHeader = ({
     onSearchChange: (v: string) => void;
     onCreate: () => void;
 }) => {
-    const cards = [{ ...TOTAL_CARD, n: total }, ...REQUEST_STATUSES.map((s: any) => ({ ...s, n: counts[s.key] ?? 0 }))];
+    const cards = [
+        { ...TOTAL_CARD, n: total },
+        ...REQUEST_STATUSES.map((s: any) => ({ ...s, n: counts[s.key] ?? 0 })),
+    ];
     const hasFilters = !!search || status !== "all" || service !== "all";
+
+    const STATUS_OPTIONS = [
+        { value: "all", label: "All statuses", dot: "bg-gray-300" },
+        ...REQUEST_STATUSES.map((s: any) => ({
+            value: s.key,
+            label: s.label,
+            dot: s.dot,
+        })),
+    ];
+
+    const SERVICE_OPTIONS = [
+        { value: "all", label: "All services" },
+        ...SERVICES.map((s) => ({ value: s, label: s })),
+    ];
+
+    const itemClass =
+        "cursor-pointer rounded-lg px-2.5 py-2 text-sm " +
+        "focus:bg-primary/10 focus:text-primary data-highlighted:bg-primary/10 data-highlighted:text-primary " +
+        "data-[state=checked]:font-medium data-[state=checked]:text-primary data-selected:font-medium data-selected:text-primary";
 
     return (
         <div className="space-y-5">
-            {/* Title */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-medium">Requests</h1>
-                    <p className="text-muted-foreground">Track customer requests from submission to completion.</p>
+                    <p className="text-muted-foreground">
+                        Track customer requests from submission to completion.
+                    </p>
                 </div>
                 <Button onClick={onCreate} className="gap-2">
                     <Plus className="h-4 w-4" /> New request
                 </Button>
             </div>
 
-            {/* Stat cards — click one to filter by it */}
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
                 {cards.map((c: any) => {
                     const Icon = c.icon;
@@ -55,7 +84,9 @@ const RequestsHeader = ({
                             type="button"
                             aria-pressed={active}
                             title={c.hint}
-                            onClick={() => onStatusChange(active && c.key !== "all" ? "all" : c.key)}
+                            onClick={() =>
+                                onStatusChange(active && c.key !== "all" ? "all" : c.key)
+                            }
                             className={cn(
                                 "rounded-2xl border p-4 px-6 text-left transition-shadow hover:shadow-sm",
                                 c.card,
@@ -63,12 +94,29 @@ const RequestsHeader = ({
                             )}
                         >
                             <div className="flex items-center justify-between gap-2">
-                                <span className={cn("truncate text-sm font-medium uppercase", c.text)}>{c.label}</span>
-                                <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full", c.iconBox)}>
+                                <span
+                                    className={cn(
+                                        "truncate text-lg font-medium uppercase",
+                                        c.text,
+                                    )}
+                                >
+                                    {c.label}
+                                </span>
+                                <span
+                                    className={cn(
+                                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                                        c.iconBox,
+                                    )}
+                                >
                                     <Icon className="h-4 w-4" />
                                 </span>
                             </div>
-                            <p className={cn("mt-2 text-2xl font-semibold tabular-nums", c.text)}>
+                            <p
+                                className={cn(
+                                    "mt-2 text-2xl font-semibold tabular-nums",
+                                    c.text,
+                                )}
+                            >
                                 {isLoading ? "—" : c.n.toLocaleString()}
                             </p>
                             {c.key !== "all" && !isLoading && (
@@ -89,33 +137,53 @@ const RequestsHeader = ({
                         value={search}
                         onChange={(e) => onSearchChange(e.target.value)}
                         placeholder="Search reference, name, email, WhatsApp…"
-                        className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+                        className="h-10 w-full rounded-lg border border-gray-100 bg-white pl-9 pr-3 text-sm outline-none focus:ring-1 focus:ring-primary/30"
                     />
                 </div>
-
-                <select
+                <Select
                     value={status}
-                    onChange={(e) => onStatusChange(e.target.value)}
-                    aria-label="Filter by status"
-                    className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 md:w-48"
+                    onValueChange={(v: any) => onStatusChange(v)}
+                    items={STATUS_OPTIONS}
                 >
-                    <option value="all">All statuses</option>
-                    {REQUEST_STATUSES.map((s: any) => (
-                        <option key={s.key} value={s.key}>{s.label}</option>
-                    ))}
-                </select>
+                    <SelectTrigger
+                        aria-label="Filter by status"
+                        className="h-10! w-full rounded-xl border-gray-200 bg-white px-3 text-sm shadow-none focus:ring-1 focus:ring-primary/30 data-[state=open]:border-primary data-popup-open:border-primary md:w-48"
+                    >
+                        <SelectValue placeholder="All statuses" />
+                    </SelectTrigger>
 
-                <select
+                    <SelectContent className="rounded-xl border-gray-200 p-1 shadow-lg">
+                        {STATUS_OPTIONS.map((o) => (
+                            <SelectItem key={o.value} value={o.value} className={itemClass}>
+                                <span className="flex items-center gap-2">
+                                    <span className={cn("h-2 w-2 rounded-full", o.dot)} />
+                                    {o.label}
+                                </span>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Select
                     value={service}
-                    onChange={(e) => onServiceChange(e.target.value)}
-                    aria-label="Filter by service"
-                    className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 md:w-56"
+                    onValueChange={(v: any) => onServiceChange(v)}
+                    items={SERVICE_OPTIONS}
                 >
-                    <option value="all">All services</option>
-                    {SERVICES.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                    ))}
-                </select>
+                    <SelectTrigger
+                        aria-label="Filter by service"
+                        className="h-10! w-full rounded-xl border-gray-200 bg-white px-3 text-sm shadow-none focus:ring-1 focus:ring-primary/30 data-[state=open]:border-primary data-popup-open:border-primary md:w-56"
+                    >
+                        <SelectValue placeholder="All services" />
+                    </SelectTrigger>
+
+                    <SelectContent className="max-h-72 rounded-xl border-gray-200 p-1 shadow-lg">
+                        {SERVICE_OPTIONS.map((o) => (
+                            <SelectItem key={o.value} value={o.value} className={itemClass}>
+                                {o.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
 
                 {hasFilters && (
                     <Button
@@ -134,5 +202,4 @@ const RequestsHeader = ({
         </div>
     );
 };
-
 export default RequestsHeader;

@@ -1,4 +1,3 @@
-// src/components/admin/TagInput.tsx — type a tag, press Enter or comma to add it
 "use client";
 
 import { useState } from "react";
@@ -26,7 +25,7 @@ export default function TagInput({
     };
 
     return (
-        <div className="flex min-h-9 flex-wrap items-center gap-1.5 rounded-md border border-input bg-white px-2 py-1.5 shadow-xs focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+        <div className="flex min-h-9 flex-wrap items-center gap-1.5 rounded-md border border-ink/30 bg-white px-2 py-1.5  focus-visible:shadow-[inset_0_0_0_0.5px_#042151]">
             {value.map((tag) => (
                 <Tag key={tag} onRemove={() => onChange(value.filter((t) => t !== tag))}>{tag}</Tag>
             ))}
@@ -44,7 +43,7 @@ export default function TagInput({
                 }}
                 onBlur={add}
                 placeholder={value.length ? "" : "Type and press Enter"}
-                className="min-w-24 flex-1 bg-transparent px-1 text-sm outline-none placeholder:text-ink/40"
+                className="min-w-24 flex-1 bg-transparent px-1 text-base outline-none placeholder:text-ink/40"
             />
         </div>
     );

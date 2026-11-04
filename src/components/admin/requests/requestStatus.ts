@@ -1,17 +1,16 @@
 import { Ban, CheckCircle2, Clock, Inbox, Loader } from "lucide-react";
 
-// Flow: pending -> in_progress -> completed   (cancelled can happen before completed)
 export const REQUEST_STATUSES: any[] = [
   {
     key: "pending",
     label: "Pending",
-    hint: "Sent by the customer, not started yet",
+    hint: "New, or still talking to the customer",
     icon: Clock,
     badge: "bg-amber-50 text-amber-700 ring-amber-600/20",
     dot: "bg-amber-500",
     card: "bg-white",
     iconBox: "bg-amber-100 text-amber-700",
-    text: "text-amber-800 uppercase",
+    text: "text-amber-800",
   },
   {
     key: "in_progress",
@@ -22,7 +21,7 @@ export const REQUEST_STATUSES: any[] = [
     dot: "bg-blue-500",
     card: "bg-white",
     iconBox: "bg-blue-100 text-blue-700",
-    text: "text-blue-800 uppercase",
+    text: "text-blue-800",
   },
   {
     key: "completed",
@@ -33,7 +32,7 @@ export const REQUEST_STATUSES: any[] = [
     dot: "bg-emerald-500",
     card: "bg-white",
     iconBox: "bg-emerald-100 text-emerald-700",
-    text: "text-emerald-800  uppercase",
+    text: "text-emerald-800",
   },
   {
     key: "cancelled",
@@ -44,7 +43,7 @@ export const REQUEST_STATUSES: any[] = [
     dot: "bg-red-500",
     card: "bg-white",
     iconBox: "bg-red-100 text-red-700",
-    text: "text-red-800 uppercase",
+    text: "text-red-800",
   },
 ];
 
@@ -69,26 +68,32 @@ export const statusInfo = (key: string) =>
 export const CLOSED_STATUSES = ["completed", "cancelled"];
 export const isOpen = (r: any) => !CLOSED_STATUSES.includes(r.status);
 
-// Customer can change the request until we start on it
-export const canEdit = (r: any) => r.status === "pending";
+// ---------- Money ----------
+export const quotationTotal = (items: any[] = []) =>
+  items.reduce((sum, i) => sum + Number(i.quantity || 0) * Number(i.unitPrice || 0), 0);
+
+// What the customer has to pay: the quotation total, or the amount agreed on the phone/WhatsApp
+export const amountDue = (r: any) =>
+  r.quotationRequested && r.quotation ? quotationTotal(r.quotation.items) : Number(r.agreedAmount ?? 0);
+
+export const currencyOf = (r: any) => r.quotation?.currency ?? r.currency ?? "RWF";
+
+export const isPaid = (r: any) => !!r.payment?.paid;
+
+// ---------- What can be done ----------
+// Details, amount and quotation can change until the customer pays
+export const canEdit = (r: any) => isOpen(r) && !isPaid(r);
 
 // Documents can be added while the request is open
 export const canUpload = (r: any) => isOpen(r);
 
-// ---------- Quotation (optional) ----------
-// Only when the customer asked for one. Otherwise the price is agreed on WhatsApp/phone.
-export const hasQuotation = (r: any) => !!r.quotation;
-export const wantsQuotation = (r: any) => !!r.quotationRequested;
-export const canMakeQuotation = (r: any) => isOpen(r) && !r.payment?.paid;
+// Pay once we told them how much (amount or quotation is set)
+export const canPay = (r: any) => isOpen(r) && !isPaid(r) && amountDue(r) > 0;
 
-export const quotationTotal = (items: any[] = []) =>
-  items.reduce((sum, i) => sum + Number(i.quantity || 0) * Number(i.unitPrice || 0), 0);
+export const hasQuotation = (r: any) => !!(r.quotationRequested && r.quotation);
 
-// ---------- Payment ----------
-// Amount comes from the quotation, or is typed in (price agreed another way)
-export const amountDue = (r: any) => (r.quotation ? quotationTotal(r.quotation.items) : Number(r.payment?.amount ?? 0));
-export const isPaid = (r: any) => !!r.payment?.paid;
-export const canPay = (r: any) => isOpen(r) && !isPaid(r);
+// Receipt: available after payment, printed / sent when the customer asks
+export const hasReceipt = (r: any) => isPaid(r);
 
 export const SERVICES = [
   "Passport application",
@@ -113,3 +118,10 @@ export const formatDate = (iso: string) =>
 
 export const formatDay = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { timeZone: "Africa/Kigali", day: "numeric", month: "short", year: "numeric" });
+
+// YYYY-MM-DD, n days from today (Kigali)
+export const inDays = (n: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toLocaleDateString("en-CA", { timeZone: "Africa/Kigali" });
+};

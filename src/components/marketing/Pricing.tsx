@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { GUARANTEE_TEXT, PRICING } from "@/lib/site";
 import FeeBreakdown from "./FeeBreakdown";
+import { getSupportFee } from "@/lib/admin/supportFee";
 
 const promises = [
   {
@@ -14,13 +15,14 @@ const promises = [
   },
 ];
 
-export default function Pricing({
+export default async function Pricing({
   as: Heading = "h2",
   showLink = true,
 }: {
   as?: "h1" | "h2";
   showLink?: boolean;
 }) {
+  const { price } = await getSupportFee();
   return (
     <section id="pricing" className="scroll-mt-24 bg-navy-50 py-10 lg:py-14">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -30,9 +32,9 @@ export default function Pricing({
               Clear, simple pricing
             </Heading>
             <p className="mt-6 font-heading text-3xl font-semibold text-title sm:text-3.3xl">
-              <span className="text-2xl font-normal text-ink/60 sm:text-2.5xl">from </span>
-              {PRICING.supportFrom}
-              <span className="text-2xl font-normal text-ink/60 sm:text-2.5xl"> per request</span>
+              <span className="text-2xl font-normal text-ink/60 sm:text-2.5xl">{PRICING.fromLabel} </span>
+              {price}
+              <span className="text-2xl font-normal text-ink/60 sm:text-2.5xl"> {PRICING.unitLabel}</span>
             </p>
             <p className="mt-4 max-w-md text-lg leading-relaxed text-ink/70">
               The exact fee depends on your case. We confirm it with you before any work begins.
@@ -61,7 +63,7 @@ export default function Pricing({
           <div>
             <FeeBreakdown />
             <p className="mt-4 px-2 text-sm text-ink/60">
-              Our fee and any standard service fee are always shown as two separate lines.
+              Our support Fee and any Standard Service Fee are always shown as two separate lines.
             </p>
           </div>
         </div>

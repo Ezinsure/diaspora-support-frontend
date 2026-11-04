@@ -8,6 +8,7 @@ import { GUARANTEE_TEXT, PRICING, whatsappLink } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import FeeBreakdown from "@/components/marketing/FeeBreakdown";
 import { cn } from "../../../../../lib/utils";
+import { getSupportFee } from "@/lib/admin/supportFee";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServicePage({ params }: Props) {
+  const { price } = await getSupportFee();
   const service = getServiceContent((await params).slug);
   if (!service) notFound();
 
@@ -51,7 +53,7 @@ export default async function ServicePage({ params }: Props) {
 
             <div className="flex flex-col gap-3 lg:items-end">
               <p className="text-sm text-ink/60">
-                Support from <span className="font-semibold text-title">{PRICING.supportFrom}</span>. Standard Service Fees Separate
+                Support {PRICING.fromLabel} <span className="font-semibold text-title"> {price} </span>. Standard Service Fees Separate
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a href={waLink} target="_blank" rel="noopener noreferrer"

@@ -1,7 +1,5 @@
-// src/components/admin/settings-ui.tsx — small building blocks for settings pages
-
 import { cn } from "../../../lib/utils";
-
+import { Search } from "lucide-react";
 
 export function PageHeader({
   title,
@@ -16,14 +14,13 @@ export function PageHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h2 className="font-sans text-xl font-semibold">{title}</h2>
-        {description && <p className="mt-1 max-w-2xl text-sm text-ink/60">{description}</p>}
+        {description && <p className="mt-1 max-w-2xl text-base text-ink/70">{description}</p>}
       </div>
       {action}
     </div>
   );
 }
 
-/** Label/description on the left, fields on the right (stacks on mobile) */
 export function SettingsSection({
   title,
   description,
@@ -34,12 +31,12 @@ export function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="grid gap-5 border-b border-navy-300/40 py-8 first:pt-0 last:border-0 last:pb-0 lg:grid-cols-[15rem_1fr] lg:gap-10">
+    <section className="grid gap-6 border-b border-navy-300/40 py-8 first:pt-0 last:border-0 last:pb-0 lg:grid-cols-[15rem_1fr] lg:gap-30">
       <div>
-        <h3 className="font-sans text-base font-semibold">{title}</h3>
+        <h3 className="font-sans text-lg font-semibold">{title}</h3>
         {description && <p className="mt-1 text-sm leading-relaxed text-ink/60">{description}</p>}
       </div>
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0 ">{children}</div>
     </section>
   );
 }
@@ -59,7 +56,7 @@ export function Field({
 }) {
   return (
     <div className={cn("grid gap-2", className)}>
-      <label htmlFor={htmlFor} className="text-sm font-medium text-ink">
+      <label htmlFor={htmlFor} className="text-base font-medium text-ink">
         {label}
       </label>
       {children}
@@ -86,11 +83,29 @@ export function Tag({ children, onRemove }: { children: React.ReactNode; onRemov
   );
 }
 
-export function EmptyState({ title, text }: { title: string; text?: string }) {
+export function EmptyState({
+  title,
+  text,
+}: {
+  title: string;
+  text?: string;
+}) {
   return (
-    <div className="rounded-2xl border-2 border-dashed border-navy-300/60 px-6 py-12 text-center">
-      <p className="font-medium text-title">{title}</p>
-      {text && <p className="mt-1 text-sm text-ink/60">{text}</p>}
+    <div className="relative flex min-h-[280px] flex-col items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-navy-50/50 to-white px-6 py-12 text-center">
+      <div className="pointer-events-none absolute left-1/2 top-0 h-32 w-64 -translate-x-1/2 rounded-full bg-navy-100/40 blur-3xl" />
+      <div className="relative mb-5 flex size-16 items-center justify-center rounded-2xl border-[.5px] border-navy-200/60 bg-white">
+        <Search className="size-8 text-title" strokeWidth={1.7} />
+      </div>
+      <div className="relative max-w-sm space-y-2">
+        <h3 className="text-base font-semibold tracking-tight text-title sm:text-lg">
+          {title}
+        </h3>
+        {text && (
+          <p className="text-sm leading-6 text-ink/60">
+            {text}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

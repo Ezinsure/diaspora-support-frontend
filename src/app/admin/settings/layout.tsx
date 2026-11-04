@@ -2,9 +2,11 @@ import SettingsTabs from "./SettingTabs";
 
 const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <div className="rounded-3xl border border-white/80 bg-white/70 shadow-[0_20px_50px_-35px_rgba(11,42,99,0.35)] backdrop-blur">
-            <SettingsTabs />
-            <div className="p-4 ">{children}</div>
+        <div className="rounded-3xl border border-white/80 bg-white">
+            <div className="sticky top-0 z-20 rounded-t-3xl bg-white">
+                <SettingsTabs />
+            </div>
+            <div className="p-10 custom-scrollbar min-h-[80vh] max-h-[80vh] overflow-y-auto ">{children}</div>
         </div>
     );
 }
