@@ -1,5 +1,3 @@
-// src/lib/service-content.ts
-// Content for /services/[slug]. Fields marked TODO must be verified before publishing.
 
 export type ServiceContent = {
   slug: string;

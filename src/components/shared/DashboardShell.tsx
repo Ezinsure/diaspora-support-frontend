@@ -102,10 +102,10 @@ export default function DashboardShell({
                                             href={href}
                                             aria-current={active ? "page" : undefined}
                                             className={cn(
-                                                "flex items-center gap-3 rounded-xl px-3 py-2 text:base 2xl:text-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-title/30",
+                                                "flex items-center gap-3 rounded-xl px-3 py-2 text-base 2xl:text-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-title/30",
                                                 active
-                                                    ? "bg-[#F3F4FB]/95 text-title border-r-4 border-r-title"
-                                                    : "text-ink/90 hover:bg-gray-100 hover:text-title",
+                                                    ? "bg-[#F3F4FB]/95 text-title/80 border-r-4 border-r-title/80"
+                                                    : "text-ink/80 hover:bg-gray-100 hover:text-title",
                                             )}
                                         >
                                             <Icon

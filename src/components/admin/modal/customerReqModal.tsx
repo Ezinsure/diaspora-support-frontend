@@ -8,12 +8,10 @@ import { cn } from "../../../../lib/utils";
 import { REQUEST_STATUSES, formatDate, formatMoney, isPaid, quotationTotal, statusInfo } from "@/components/admin/requests/requestStatus"
 import { initialsOf } from "../customer/customerStats";
 
-// All requests of one customer
 const CustomerRequestsModal = ({ customer, onNewRequest }: { customer: any; onNewRequest?: (c: any) => void }) => {
     const [status, setStatus] = useState("all");
     const list = status === "all" ? customer.requests : customer.requests.filter((r: any) => r.status === status);
 
-    // Only show filter chips for statuses this customer has
     const chips = [
         { key: "all", label: "All", n: customer.total },
         ...REQUEST_STATUSES.filter((s: any) => customer.byStatus[s.key]).map((s: any) => ({ key: s.key, label: s.label, n: customer.byStatus[s.key] })),
@@ -22,7 +20,7 @@ const CustomerRequestsModal = ({ customer, onNewRequest }: { customer: any; onNe
     const waLink = `https://wa.me/${String(customer.whatsapp).replace(/\D/g, "")}`;
 
     return (
-        <div className="p-5 sm:p-6">
+        <div className="p-5 sm:p-6 px-8">
             {/* Customer */}
             <div className="flex flex-col gap-4 pr-8 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
@@ -56,8 +54,8 @@ const CustomerRequestsModal = ({ customer, onNewRequest }: { customer: any; onNe
                     { label: "Paid", value: formatMoney(customer.paid) },
                     { label: "Quoted, not paid", value: formatMoney(customer.unpaid) },
                 ].map((s) => (
-                    <div key={s.label} className="rounded-xl border border-gray-200 px-3 py-2.5">
-                        <p className="text-xs text-gray-500">{s.label}</p>
+                    <div key={s.label} className="rounded-xl border border-gray-200 px-4 py-2.5">
+                        <p className="text-base text-gray-500">{s.label}</p>
                         <p className="mt-0.5 truncate font-semibold tabular-nums text-gray-900">{s.value}</p>
                     </div>
                 ))}
@@ -98,9 +96,9 @@ const CustomerRequestsModal = ({ customer, onNewRequest }: { customer: any; onNe
                         return (
                             <li key={r.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-4">
                                 <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-mono text-xs font-medium text-gray-500">{r.reference}</span>
-                                        <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset", st.badge)}>
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <span className="font-mono text-sm font-medium text-gray-500">{r.reference}</span>
+                                        <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium ring-1 ring-inset", st.badge)}>
                                             <span className={cn("h-1.5 w-1.5 rounded-full", st.dot)} /> {st.label}
                                         </span>
                                     </div>
@@ -142,5 +140,4 @@ const CustomerRequestsModal = ({ customer, onNewRequest }: { customer: any; onNe
         </div>
     );
 };
-
 export default CustomerRequestsModal;

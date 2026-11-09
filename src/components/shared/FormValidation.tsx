@@ -114,7 +114,7 @@ export const tags = (max = 20, maxLength = 100) =>
     .refine((list) => list.length <= max, { message: `At most ${max} tags` })
     .refine((list) => list.every((t) => t.length <= maxLength), { message: `Each tag must be ${maxLength} characters or less` });
 
-// ============ Form schemas ============
+//  Form schemas 
 
 export const USER_ROLES = ["dev", "admin", "hr", "finance", "staff", "user"] as const;
 
@@ -160,6 +160,24 @@ export const companySchema = z.object({
   address: optionalText("Address", 200),
   city: optionalText("City", 100),
   country: optionalText("Country", 100),
+});
+
+// Quotation 
+
+// Today's date in Kigali as YYYY-MM-DD
+const todayKigali = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Kigali" }).format(new Date());
+
+// One extra line (line 1, the support fee)
+export const quotationLineSchema = z.object({
+  description: requiredText("Description", 200),
+  quantity: amount("Quantity", { min: 0.01, max: 100_000 }),
+  unitPrice: amount("Unit price").refine((v) => v > 0, { message: "Enter a price" }),
+});
+
+export const quotationSchema = z.object({
+  items: z.array(quotationLineSchema).max(49, { message: "A quotation can have at most 50 lines" }),
+  validUntil: optionalDay("Valid until").refine((v) => v === "" || v >= todayKigali(), { message: "Valid until can't be in the past" }),
+  note: optionalText("Note", 1000),
 });
 
 // Public request form (customer)
@@ -258,7 +276,7 @@ export const passwordStrength = (password: string) => {
 };
 
 
-// ============ Helpers ============
+// Helpers 
 
 export type FieldErrors = Record<string, string>;
 

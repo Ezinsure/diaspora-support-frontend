@@ -68,43 +68,31 @@ export const statusInfo = (key: string) =>
 export const CLOSED_STATUSES = ["completed", "cancelled"];
 export const isOpen = (r: any) => !CLOSED_STATUSES.includes(r.status);
 
-// ---------- Money ----------
+// Money 
 export const quotationTotal = (items: any[] = []) =>
   items.reduce((sum, i) => sum + Number(i.quantity || 0) * Number(i.unitPrice || 0), 0);
 
-// What the customer has to pay: the quotation total, or the amount agreed on the phone/WhatsApp
+export const hasQuotation = (r: any) => !!r?.quotation;
+
 export const amountDue = (r: any) =>
-  r.quotationRequested && r.quotation ? quotationTotal(r.quotation.items) : Number(r.agreedAmount ?? 0);
+  r?.quotation ? Number(r.quotation.total ?? quotationTotal(r.quotation.items)) : 0;
 
-export const currencyOf = (r: any) => r.quotation?.currency ?? r.currency ?? "RWF";
+export const balanceOf = (r: any) => Math.max(amountDue(r) - Number(r?.amountPaid ?? 0), 0);
 
-export const isPaid = (r: any) => !!r.payment?.paid;
+export const currencyOf = (r: any) => r?.quotation?.currency ?? r?.currency ?? "USD";
 
-// ---------- What can be done ----------
-// Details, amount and quotation can change until the customer pays
+export const isPaid = (r: any) => !!r?.payment?.paid;
+
 export const canEdit = (r: any) => isOpen(r) && !isPaid(r);
 
-// Documents can be added while the request is open
 export const canUpload = (r: any) => isOpen(r);
 
-// Pay once we told them how much (amount or quotation is set)
-export const canPay = (r: any) => isOpen(r) && !isPaid(r) && amountDue(r) > 0;
+export const canPay = (r: any) => isOpen(r) && hasQuotation(r) && balanceOf(r) > 0;
 
-export const hasQuotation = (r: any) => !!(r.quotationRequested && r.quotation);
-
-// Receipt: available after payment, printed / sent when the customer asks
 export const hasReceipt = (r: any) => isPaid(r);
 
-export const SERVICES = [
-  "Passport application",
-  "Driving licence",
-  "Visa application",
-  "Business registration",
-  "Land title",
-  "Other",
-];
-
-export const formatMoney = (n: number, currency = "RWF") => `${currency} ${Number(n ?? 0).toLocaleString()}`;
+export const formatMoney = (n: number, currency = "USD") =>
+  `${currency} ${Number(n ?? 0).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 
 export const formatDate = (iso: string) =>
   new Date(iso).toLocaleString("en-GB", {
@@ -116,8 +104,8 @@ export const formatDate = (iso: string) =>
     minute: "2-digit",
   });
 
-export const formatDay = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", { timeZone: "Africa/Kigali", day: "numeric", month: "short", year: "numeric" });
+export const formatDay = (iso?: string | null) =>
+  iso ? new Date(iso).toLocaleDateString("en-GB", { timeZone: "Africa/Kigali", day: "numeric", month: "short", year: "numeric" }) : "";
 
 // YYYY-MM-DD, n days from today (Kigali)
 export const inDays = (n: number) => {

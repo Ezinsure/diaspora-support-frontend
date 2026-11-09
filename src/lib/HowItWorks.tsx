@@ -148,8 +148,7 @@ function StepPanel({ step, large = false }: { step: (typeof steps)[number]; larg
   );
 }
 
-/* ── Visuals: simple illustrations of each step ─────────────────────── */
-
+/* Visuals: simple illustrations of each step */
 function ContactVisual() {
   const channels = [
     { icon: WhatsAppIcon, label: "WhatsApp", note: "Fastest", highlight: true },

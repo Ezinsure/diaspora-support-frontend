@@ -4,8 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CompanyService } from "@/services/companyService";
 import { getErrorMessage } from "@/lib/admin/httpRequest";
+import { checkLogo } from "@/lib/files";
+import { useState } from "react";
 
-export const COMPANY_KEY = ["company-profile"];
+const COMPANY_KEY = [["company-profile"], ["company"]];
 
 const LINKEDIN_COMPANY = /^https?:\/\/(www\.)?linkedin\.com\/company\//i;
 
@@ -35,6 +37,11 @@ export const companyToForm = (c: any) => {
     city: c.address?.city ?? "",
     country: c.address?.country ?? "",
   };
+};
+
+const useRefreshCompany = () => {
+  const qc = useQueryClient();
+  return () => COMPANY_KEY.forEach((queryKey) => qc.invalidateQueries({ queryKey }));
 };
 
 export const formToCompany = (f: any, current?: any) => {
@@ -99,25 +106,36 @@ export const useUpdateCompany = () => {
 };
 
 export const useUploadLogo = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (file: File) => CompanyService.uploadLogo(file),
-    onSuccess: (data: any) => {
-      qc.setQueryData(COMPANY_KEY, data);
+  const refresh = useRefreshCompany();
+  const [progress, setProgress] = useState(0);
+
+  const mutation = useMutation({
+    mutationFn: (file: File) => {
+      const problem = checkLogo(file);
+      if (problem) throw new Error(problem);
+      setProgress(0);
+      return CompanyService.uploadLogo(file, setProgress).then((r) => r.data);
+    },
+    onSuccess: () => {
+      refresh();
       toast.success("Logo updated");
     },
     onError: (err: any) => toast.error(getErrorMessage(err)),
+    onSettled: () => setTimeout(() => setProgress(0), 600),
   });
+
+  return { ...mutation, progress };
 };
 
 export const useRemoveLogo = () => {
-  const qc = useQueryClient();
+  const refresh = useRefreshCompany();
   return useMutation({
-    mutationFn: () => CompanyService.removeLogo(),
-    onSuccess: (data: any) => {
-      qc.setQueryData(COMPANY_KEY, data);
+    mutationFn: () => CompanyService.removeLogo().then((r) => r.data),
+    onSuccess: () => {
+      refresh();
       toast.success("Logo removed");
     },
     onError: (err: any) => toast.error(getErrorMessage(err)),
   });
+
 };

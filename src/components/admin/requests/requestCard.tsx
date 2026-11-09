@@ -1,14 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Check, Copy, CreditCard, FileText, Mail, MessageCircle, Paperclip, Pencil, Receipt, ReceiptText, Upload } from "lucide-react";
+import { useState } from "react";
+import { Check, Copy, CreditCard, FileText, Mail, MessageCircle, Paperclip, Pencil, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "../../../../lib/utils";
 import {
   amountDue,
   canEdit,
   canPay,
-  canUpload,
   currencyOf,
   formatDate,
   formatMoney,
@@ -18,26 +17,27 @@ import {
   isPaid,
   statusInfo,
 } from "./requestStatus";
+import RequestDocuments from "./requestDocs";
+import QuotationButton from "./quotationButton";
 
 const initials = (r: any) => `${r.firstName?.[0] ?? ""}${r.lastName?.[0] ?? ""}`.toUpperCase() || "?";
 
 const RequestCard = ({
   request,
   onEdit,
-  onUpload,
   onPay,
   onViewQuotation,
+  onMakeQuotation,
   onViewReceipt,
 }: {
   request: any;
   onEdit: (r: any) => void;
-  onUpload: (r: any, files: File[]) => void;
   onPay: (r: any) => void;
   onViewQuotation: (r: any) => void;
+  onMakeQuotation: (r: any) => void;
   onViewReceipt: (r: any) => void;
 }) => {
   const st = statusInfo(request.status);
-  const fileRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
 
   const copyRef = async () => {
@@ -58,9 +58,9 @@ const RequestCard = ({
   const waLink = `https://wa.me/${String(request.whatsapp).replace(/\D/g, "")}`;
 
   return (
-    <article className="flex flex-col rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-sm">
+    <article className="flex h-144 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-sm">
 
-      <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-5 py-3">
+      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 px-5 py-3">
         <button
           type="button"
           onClick={copyRef}
@@ -75,7 +75,8 @@ const RequestCard = ({
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 px-5 py-4">
+      {/* Body (scrolls when the content is long) */}
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 py-4 scrollbar-none ">
         <div className="flex items-start gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
             {initials(request)}
@@ -96,26 +97,26 @@ const RequestCard = ({
         </div>
 
         {request.note && (
-          <p className="line-clamp-2 rounded-lg bg-gray-50 px-3 py-2 text-base text-ink" title={request.note}>
+          <p className="line-clamp-3 shrink-0 rounded-lg bg-gray-50 px-3 py-2 text-base text-ink" title={request.note}>
             {request.note}
           </p>
         )}
 
         {request.statusNote && request.status === "cancelled" && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
+          <p className="shrink-0 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
             <span className="font-medium">Reason:</span> {request.statusNote}
           </p>
         )}
 
-        {/* Next step hint while we're still talking to the customer */}
         {needsAgreement && (
-          <p className="rounded-lg border border-dashed border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-            Call or WhatsApp the customer, then use <span className="font-semibold">Edit</span> to add the documents and the amount (or a quotation).
+          <p className="shrink-0 rounded-lg border border-dashed border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            Call or WhatsApp the customer, add the required documents in <span className="font-semibold">Edit</span>, then use{" "}
+            <span className="font-semibold">Make quotation</span>.
           </p>
         )}
 
-        {/* Documents / amount / payment */}
-        <div className="grid grid-cols-3 gap-2 text-base">
+        {/* Documents / quotation / payment */}
+        <div className="grid shrink-0 grid-cols-3 gap-2 text-base">
           <div className="rounded-lg border border-gray-200 px-3 py-2">
             <p className="text-ink/80">Documents</p>
             <p className="mt-0.5 flex items-center gap-1 font-medium text-gray-900">
@@ -131,11 +132,11 @@ const RequestCard = ({
             title={quoted ? "View quotation" : undefined}
             className={cn("rounded-lg border border-gray-200 px-3 py-2 text-left", quoted ? "hover:border-primary/40 hover:bg-primary/5" : "cursor-default")}
           >
-            <p className="text-ink/80">{quoted ? "Quotation" : "Amount"}</p>
-            {amount > 0 ? (
-              <p className={cn("mt-0.5 truncate font-medium", quoted ? "text-primary" : "text-gray-900")}>{formatMoney(amount, currency)}</p>
+            <p className="text-ink/80">Quotation</p>
+            {quoted ? (
+              <p className="mt-0.5 truncate font-semibold text-primary">{formatMoney(amount, currency)}</p>
             ) : (
-              <p className="mt-0.5 font-medium text-gray-500">Not set</p>
+              <p className="mt-0.5 font-semibold text-gray-500">Not made yet</p>
             )}
           </button>
 
@@ -147,13 +148,13 @@ const RequestCard = ({
             className={cn("rounded-lg border border-gray-200 px-3 py-2 text-left", paid ? "hover:border-emerald-300 hover:bg-emerald-50" : "cursor-default")}
           >
             <p className="text-ink/80">Payment</p>
-            {paid ? <p className="mt-0.5 font-medium text-emerald-700">Paid</p> : <p className="mt-0.5 font-medium text-amber-700">Not paid</p>}
+            {paid ? <p className="mt-0.5 font-semibold text-emerald-700">Paid</p> : <p className="mt-0.5 font-semibold text-amber-700">Not paid</p>}
           </button>
         </div>
 
-        {/* Required documents (from the call) */}
+        {/* Required documents */}
         {required.length > 0 && (
-          <div>
+          <div className="shrink-0">
             <p className="mb-1 text-xs font-medium text-gray-500">Required</p>
             <ul className="flex flex-wrap gap-1.5">
               {required.slice(0, 4).map((d) => (
@@ -165,47 +166,33 @@ const RequestCard = ({
             </ul>
           </div>
         )}
-        <p className="mt-auto text-sm text-ink/70">Created {formatDate(request.createdAt)}</p>
+
+        <p className="mt-auto shrink-0 text-sm font-medium text-ink/90">Created {formatDate(request.createdAt)}</p>
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-gray-200 px-5 py-3">
-        <input
-          ref={fileRef}
-          type="file"
-          multiple
-          accept=".pdf,.jpg,.jpeg,.png"
-          className="hidden"
-          onChange={(e) => {
-            const files = Array.from(e.target.files ?? []);
-            if (files.length) onUpload(request, files);
-            e.target.value = ""; // allow picking the same file again
-          }}
-        />
-        <Button variant="outline" size="sm" className="gap-1.5" disabled={!canUpload(request)} onClick={() => fileRef.current?.click()}>
-          <Upload className="h-4 w-4" /> Documents
-        </Button>
+      {/* Documents (fixed) */}
+      <div className="shrink-0 border-t border-gray-200 px-5 py-3">
+        <RequestDocuments request={request} />
+      </div>
+
+      {/* Actions (fixed) */}
+      <div className="flex shrink-0 flex-wrap items-center gap-2 border-t border-gray-200 px-5 py-3">
+        <QuotationButton request={request} onMake={onMakeQuotation} onView={onViewQuotation} />
 
         {!paid && isOpen(request) && (
           <Button
-            size="sm"
+            size="lg"
             className="gap-1.5"
             disabled={!canPay(request)}
-            title={!canPay(request) ? "Set the amount (or a quotation) in Edit first" : undefined}
+            title={!canPay(request) ? "Make a quotation first" : undefined}
             onClick={() => onPay(request)}
           >
             <CreditCard className="h-4 w-4" /> Make payment
           </Button>
         )}
 
-        {quoted && (
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onViewQuotation(request)}>
-            <ReceiptText className="h-4 w-4" /> Quotation
-          </Button>
-        )}
-
         {hasReceipt(request) && (
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onViewReceipt(request)}>
+          <Button variant="outline" size="lg" className="gap-1.5" onClick={() => onViewReceipt(request)}>
             <Receipt className="h-4 w-4" /> Receipt
           </Button>
         )}

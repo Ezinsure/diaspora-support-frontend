@@ -19,6 +19,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { serviceFeeSchema, validate, type FieldErrors } from "@/components/shared/FormValidation";
 
+// The select can't hold null, so "none" stands for a general fee (no service)
+const GENERAL = "none";
+
 const FieldError = ({ text }: { text?: string }) => (text ? <p className="mt-1 text-xs text-destructive">{text}</p> : null);
 
 const ServiceFeeFormDialog = ({
@@ -66,7 +69,8 @@ export const ServiceFeeForm = ({
   isSaving?: boolean;
 }) => {
   const [name, setName] = useState(fee?.name ?? "");
-  const [serviceId, setServiceId] = useState<string>(fee ? (fee.serviceId ?? "") : (defaultServiceId ?? ""));
+  // Existing fee -> its service or General; new fee -> the service we came from, or General
+  const [serviceId, setServiceId] = useState<string>((fee ? fee.serviceId : defaultServiceId) || GENERAL);
   const [amount, setAmount] = useState<string>(fee ? String(fee.amount) : "");
   const [currency, setCurrency] = useState(fee?.currency ?? "USD");
   const [description, setDescription] = useState(fee?.description ?? "");
@@ -76,7 +80,11 @@ export const ServiceFeeForm = ({
   const { data: servicesData } = useServices();
   const services = servicesData?.services ?? [];
 
-  const serviceItems = services.map((s) => ({ value: s.id, label: s.isActive ? s.name : `${s.name} (hidden)` }));
+  // Labels for the selected value (shown in the trigger)
+  const serviceItems = [
+    { value: GENERAL, label: "No service (general fee)" },
+    ...services.map((s) => ({ value: s.id, label: s.isActive ? s.name : `${s.name} (hidden)` })),
+  ];
 
   const amountNum = Number(amount);
   const amountOk = amount !== "" && amountNum >= 0 && Number.isFinite(amountNum);
@@ -85,11 +93,18 @@ export const ServiceFeeForm = ({
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        const result = validate(serviceFeeSchema, { name, serviceId, amount, currency, description, isActive });
+        const result = validate(serviceFeeSchema, {
+          name,
+          serviceId: serviceId === GENERAL ? null : serviceId, // "none" -> null before checking
+          amount,
+          currency,
+          description,
+          isActive,
+        });
         if (!result.ok) return setErrors(result.errors);
         onSave({
           name: result.data.name,
-          serviceId: result.data.serviceId,
+          serviceId: result.data.serviceId, // null = general fee
           amount: result.data.amount,
           currency: result.data.currency,
           description: result.data.description,
@@ -107,27 +122,39 @@ export const ServiceFeeForm = ({
           <Input id="feeName" value={name} onChange={(e) => setName(e.target.value)} required maxLength={200} />
         </Field>
 
-        <Field label="Service" htmlFor="feeService" className="sm:col-span-2" hint="Leave as General if it applies to any request.">
-          <Select items={serviceItems} value={serviceId || null} onValueChange={(v: any) => setServiceId(v ? String(v) : "")}>
+        <Field label="Service" htmlFor="feeService" className="sm:col-span-2" hint="Choose General if it applies to any request (e.g. the support fee).">
+          <Select
+            items={serviceItems}
+            value={serviceId}
+            onValueChange={(v: any) => {
+              setServiceId(v ? String(v) : GENERAL);
+              if (errors.serviceId) setErrors(({ serviceId: _, ...rest }) => rest);
+            }}
+          >
             <SelectTrigger id="feeService" className={cn(selectClass, errors.serviceId && "border-destructive")}>
               <SelectValue placeholder="Choose a service" />
             </SelectTrigger>
 
             <SelectContent className="max-h-72">
-              {services.length === 0 ? (
-                <p className="px-3 py-2 text-sm text-ink/50">No services yet. Create one first.</p>
-              ) : (
-                services.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    <span className="flex w-full items-center gap-2">
-                      <span className="truncate">{s.name}</span>
-                      {!s.isActive && (
-                        <span className="ml-auto rounded-md bg-navy-50 px-1.5 py-0.5 text-[11px] font-medium text-ink/50">Hidden</span>
-                      )}
-                    </span>
-                  </SelectItem>
-                ))
-              )}
+              <SelectItem value={GENERAL}>
+                <span className="flex w-full items-center gap-2">
+                  <span className="truncate">No service (general fee)</span>
+                  <span className="ml-auto rounded-md bg-navy-50 px-1.5 py-0.5 text-[11px] font-medium text-ink/50">General</span>
+                </span>
+              </SelectItem>
+
+              {services.length > 0 && <div className="my-1 h-px bg-gray-100" role="separator" />}
+
+              {services.map((s) => (
+                <SelectItem key={s.id} value={s.id}>
+                  <span className="flex w-full items-center gap-2">
+                    <span className="truncate">{s.name}</span>
+                    {!s.isActive && (
+                      <span className="ml-auto rounded-md bg-navy-50 px-1.5 py-0.5 text-[11px] font-medium text-ink/50">Hidden</span>
+                    )}
+                  </span>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FieldError text={errors.serviceId} />

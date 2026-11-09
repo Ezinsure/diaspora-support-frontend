@@ -3,7 +3,7 @@
 import { Plus, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "../../../../lib/utils";
-import { REQUEST_STATUSES, SERVICES, TOTAL_CARD } from "./requestStatus";
+import { REQUEST_STATUSES, TOTAL_CARD } from "./requestStatus";
 import {
     Select,
     SelectContent,
@@ -11,6 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useServices } from "@/hooks/useService";
 
 const RequestsHeader = ({
     counts,
@@ -50,9 +51,14 @@ const RequestsHeader = ({
         })),
     ];
 
+    const { data: servicesData, isLoading: loadingServices } = useServices({ limit: 100 });
     const SERVICE_OPTIONS = [
-        { value: "all", label: "All services" },
-        ...SERVICES.map((s) => ({ value: s, label: s })),
+        { value: "all", label: "All services", hidden: false },
+        ...(servicesData?.services ?? []).map((s: any) => ({
+            value: s.id as string,
+            label: s.name as string,
+            hidden: s.isActive === false,
+        })),
     ];
 
     const itemClass =
@@ -151,16 +157,18 @@ const RequestsHeader = ({
                     >
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
-
-                    <SelectContent className="rounded-xl border-gray-200 p-1 shadow-lg">
-                        {STATUS_OPTIONS.map((o) => (
+                    <SelectContent className="max-h-72 rounded-xl border-gray-200 p-1 shadow-lg">
+                        {SERVICE_OPTIONS.map((o) => (
                             <SelectItem key={o.value} value={o.value} className={itemClass}>
-                                <span className="flex items-center gap-2">
-                                    <span className={cn("h-2 w-2 rounded-full", o.dot)} />
-                                    {o.label}
+                                <span className="flex w-full items-center gap-2">
+                                    <span className="truncate">{o.label}</span>
+                                    {o.hidden && (
+                                        <span className="ml-auto rounded-md bg-gray-100 px-1.5 py-0.5 text-[11px] text-gray-500">Hidden</span>
+                                    )}
                                 </span>
                             </SelectItem>
                         ))}
+                        {loadingServices && <p className="px-3 py-2 text-sm text-gray-500">Loading services…</p>}
                     </SelectContent>
                 </Select>
 
@@ -173,7 +181,7 @@ const RequestsHeader = ({
                         aria-label="Filter by service"
                         className="h-10! w-full rounded-xl border-gray-200 bg-white px-3 text-sm shadow-none focus:ring-1 focus:ring-primary/30 data-[state=open]:border-primary data-popup-open:border-primary md:w-56"
                     >
-                        <SelectValue placeholder="All services" />
+                        <SelectValue placeholder={loadingServices ? "Loading services…" : "All services"} />
                     </SelectTrigger>
 
                     <SelectContent className="max-h-72 rounded-xl border-gray-200 p-1 shadow-lg">
