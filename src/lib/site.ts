@@ -89,4 +89,4 @@ export const FALLBACK_PRICE = formatMoney(
 export const GUARANTEE_TEXT =
   "Our guarantee applies to the support service we provide, not to the decision or processing time of any official designated institution. If we fail to provide the agreed support service, our service-fee refund terms will apply.";
 
-export const SITE_URL = "https://www.your-domain.com"; // TODO: real domain, no trailing slash
+export const SITE_URL = "https://diaspora.solektra.co/";
