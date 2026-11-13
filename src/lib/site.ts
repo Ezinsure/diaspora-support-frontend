@@ -1,11 +1,9 @@
-// src/lib/site.ts — one place for links, services and contact details
 import { BellRing, BookUser, FileBadge, IdCard } from "lucide-react";
 
-// TODO: your real WhatsApp number, international format, digits only
-export const WHATSAPP_NUMBER = "250700000000";
-export const WHATSAPP_DISPLAY = "+250 700 000 000"; // TODO: same number, formatted for reading
+export const WHATSAPP_NUMBER = "250794766463";
+export const WHATSAPP_DISPLAY = "+250 794 766 463"; 
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Hello, I would like help with a service.",
+  "Hello! I need help obtaining a document and would like you to handle it for me. Could you assist?",
 )}`;
 
 export const SUPPORT = {
@@ -23,7 +21,7 @@ export const WHATSAPP_LABEL = SUPPORT.is24x7
 
 export const CONTACT = {
   email: "diaspora@solektra.co",
-  phone: null as string | null, // optional, e.g. "+250 788 000 000"
+  phone: null as string | null, 
   address: "KABC 6th Floor ",
   city: "Kigali",
 };
@@ -66,7 +64,7 @@ export const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-// WhatsApp link with a custom first message (e.g. for a specific service)
+
 export const whatsappLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
