@@ -1,10 +1,9 @@
-import { MapPin, Quote, Star } from "lucide-react";
+"use client";
 
-/**
- * Customer stories for the landing page.
- * Fields match the "Success stories" form in the dashboard.
- * Only publish stories from real customers who agreed to share them.
- */
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, MapPin, Quote, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 export type Story = {
     id: string;
     customerName: string;
@@ -17,15 +16,15 @@ export type Story = {
     photoUrl?: string | null;
 };
 
-// 
+// Placeholders: replace with real stories, shared with the customer's permission
 export const PREVIEW_STORIES: Story[] = [
     {
         id: "p1",
         customerName: "Customer A",
         country: "Belgium",
-        service: "Passport renewal",
+        service: "e-Passport Application",
         title: "Sorted without flying home",
-        story: "Placeholder text. A real customer's words go here: what they needed, how the follow-up went, and how it felt to have it handled from abroad.",
+        story: "Placeholder text. A real customer's words go here: what they needed, how the follow-up went, and how it felt to have it handled for them.",
         rating: 5,
         storyDate: "2026-09-14",
     },
@@ -33,7 +32,7 @@ export const PREVIEW_STORIES: Story[] = [
         id: "p2",
         customerName: "Customer B",
         country: "Canada",
-        service: "Birth certificate",
+        service: "Birth Services",
         title: "Clear steps from day one",
         story: "Placeholder text. Keep real stories short and specific: two to four sentences read best.",
         rating: 5,
@@ -43,7 +42,7 @@ export const PREVIEW_STORIES: Story[] = [
         id: "p3",
         customerName: "Customer C",
         country: "United States",
-        service: "Land title transfer",
+        service: "Criminal Record Certificate",
         title: "Updates every step",
         story: "Placeholder text. Mention the service and the outcome, never personal or document details.",
         rating: 4,
@@ -53,13 +52,12 @@ export const PREVIEW_STORIES: Story[] = [
         id: "p4",
         customerName: "Customer D",
         country: "United Kingdom",
-        service: "Document legalization",
+        service: "Legalization of documents",
         title: "Patient and honest",
         story: "Placeholder text. A short, genuine sentence is better than a long one.",
         rating: 5,
         storyDate: "2026-06-30",
     },
-
 ];
 
 const initials = (name: string) =>
@@ -72,13 +70,16 @@ const initials = (name: string) =>
 
 const monthYear = (d?: string | null) => (d ? new Date(d).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : null);
 
-const Stars = ({ value = 0, size = "sm" }: { value?: number | null; size?: "sm" | "lg" }) =>
+const Stars = ({ value = 0, size = "sm", dark = false }: { value?: number | null; size?: "sm" | "lg"; dark?: boolean }) =>
     value ? (
         <div className="flex items-center gap-0.5" aria-label={`${value} out of 5`}>
             {[1, 2, 3, 4, 5].map((i) => (
                 <Star
                     key={i}
-                    className={`${size === "lg" ? "h-5 w-5" : "h-4 w-4"} ${i <= value ? "fill-amber-400 text-amber-400" : "fill-navy-300/40 text-navy-300/40"}`}
+                    className={cn(
+                        size === "lg" ? "h-5 w-5" : "h-4 w-4",
+                        i <= value ? "fill-amber-400 text-amber-400" : dark ? "fill-white/15 text-white/15" : "fill-navy-300/40 text-navy-300/40",
+                    )}
                     aria-hidden
                 />
             ))}
@@ -96,117 +97,201 @@ const Avatar = ({ story, size = "md" }: { story: Story; size?: "md" | "lg" }) =>
     );
 };
 
-const Person = ({ story, size = "md" }: { story: Story; size?: "md" | "lg" }) => (
-    <div className="flex items-center gap-3">
-        <Avatar story={story} size={size} />
-        <div className="min-w-0">
-            <p className={`truncate font-semibold text-title ${size === "lg" ? "text-base" : "text-sm"}`}>{story.customerName}</p>
-            <p className="flex items-center gap-1 truncate text-xs text-ink/55">
-                {story.country && (
-                    <>
-                        <MapPin className="h-3 w-3" aria-hidden /> {story.country}
-                    </>
-                )}
-                {story.country && monthYear(story.storyDate) && <span aria-hidden>·</span>}
-                {monthYear(story.storyDate)}
-            </p>
-        </div>
-    </div>
-);
-
-const ServiceTag = ({ children }: { children: React.ReactNode }) => (
-    <span className="inline-flex items-center rounded-full border border-navy-300/60 bg-white/70 px-2.5 py-1 text-xs font-medium text-navy-700">{children}</span>
+const ArrowButton = ({ label, disabled, onClick, children }: { label: string; disabled?: boolean; onClick: () => void; children: React.ReactNode }) => (
+    <button
+        type="button"
+        aria-label={label}
+        disabled={disabled}
+        onClick={onClick}
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-navy-300/60 bg-white text-title transition hover:border-title hover:bg-title hover:text-white disabled:pointer-events-none disabled:opacity-40"
+    >
+        {children}
+    </button>
 );
 
 const Testimonials = ({
     stories = PREVIEW_STORIES,
     heading = "Stories from people we helped",
-    subheading = "Real experiences from customers abroad, shared with their permission.",
+    subheading = "Real experiences from our customers, shared with their permission.",
 }: {
     stories?: Story[];
     heading?: string;
     subheading?: string;
 }) => {
+    const track = useRef<HTMLDivElement>(null);
+    const [active, setActive] = useState(0);
+
+    const rated = stories.filter((s) => s.rating);
+    const average = rated.length ? rated.reduce((sum, s) => sum + (s.rating ?? 0), 0) / rated.length : 0;
+
+    // Which card is closest to the middle
+    const update = useCallback(() => {
+        const el = track.current;
+        if (!el) return;
+        const middle = el.scrollLeft + el.clientWidth / 2;
+        let best = 0;
+        let distance = Infinity;
+        Array.from(el.children).forEach((child, i) => {
+            const card = child as HTMLElement;
+            const d = Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle);
+            if (d < distance) {
+                distance = d;
+                best = i;
+            }
+        });
+        setActive(best);
+    }, []);
+
+    // Scroll a card to the middle
+    const goTo = useCallback((i: number, smooth = true) => {
+        const el = track.current;
+        const card = el?.children[i] as HTMLElement | undefined;
+        if (!el || !card) return;
+        el.scrollTo({ left: card.offsetLeft + card.offsetWidth / 2 - el.clientWidth / 2, behavior: smooth ? "smooth" : "auto" });
+    }, []);
+
+    useEffect(() => {
+        const el = track.current;
+        if (!el) return;
+        goTo(Math.min(1, stories.length - 1), false); // start with a card on each side
+        update();
+        let frame = 0;
+        const onScroll = () => {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(update);
+        };
+        el.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        return () => {
+            el.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", onScroll);
+            cancelAnimationFrame(frame);
+        };
+    }, [goTo, update, stories.length]);
+
     if (!stories.length) return null;
-    const [featured, ...rest] = stories;
-    const average = stories.filter((s) => s.rating).reduce((sum, s, _, arr) => sum + (s.rating ?? 0) / arr.length, 0);
 
     return (
         <section id="stories" className="relative scroll-mt-24 overflow-hidden py-16 lg:py-24">
-            {/* soft background */}
-            {/* <span className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(700px_380px_at_0%_0%,#D9E5FE_0%,transparent_60%),radial-gradient(600px_380px_at_100%_100%,#DDF3EE_0%,transparent_60%)]" /> */}
-
-            <div className="mx-auto max-w-7xl px-5 sm:px-8">
-                {/* Heading */}
-                <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-                    <div className="max-w-2xl">
-                        <h2 className="mt-3 text-3xl font-semibold tracking-[-0.01em] text-title sm:text-[2.6rem] sm:leading-tight">{heading}</h2>
-                        <p className="mt-3 text-lg leading-relaxed text-ink/65">{subheading}</p>
-                    </div>
-
+            {/* Heading + rating + arrows */}
+            <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 sm:flex-row sm:items-end sm:justify-between sm:px-8">
+                <div className="max-w-2xl">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-clay-600">Customer stories</p>
+                    <h2 className="mt-3 text-3xl font-semibold tracking-[-0.01em] text-title sm:text-[2.6rem] sm:leading-tight">{heading}</h2>
+                    <p className="mt-3 text-lg leading-relaxed text-ink/65">{subheading}</p>
                     {average > 0 && (
-                        <div className="flex items-center gap-3 rounded-2xl border border-white bg-white/80 px-4 py-3 shadow-sm backdrop-blur">
-                            <span className="text-3xl font-semibold tabular-nums text-title">{average.toFixed(1)}</span>
-                            <div>
-                                <Stars value={Math.round(average)} />
-                                <p className="mt-0.5 text-xs text-ink/55">
-                                    from {stories.length} {stories.length === 1 ? "story" : "stories"}
-                                </p>
-                            </div>
+                        <div className="mt-4 flex items-center gap-2 text-sm text-ink/60">
+                            <Stars value={Math.round(average)} />
+                            <span>
+                                <span className="font-semibold text-title">{average.toFixed(1)}</span> average from {rated.length}{" "}
+                                {rated.length === 1 ? "review" : "reviews"}
+                            </span>
                         </div>
                     )}
                 </div>
-                <div className="mt-10 grid gap-5 lg:grid-cols-5">
-                    {/* Featured story */}
-                    <figure className="relative flex flex-col justify-between overflow-hidden rounded-3xl inset-0 -z-10 bg-[radial-gradient(700px_380px_at_0%_0%,#D9E5FE_0%,transparent_60%),radial-gradient(600px_380px_at_100%_100%,#DDF3EE_0%,transparent_60%)] p-7 text-title shadow-xl shadow-title/20 sm:p-9 lg:col-span-2">
-                        <span className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#5B7BEA]/30 blur-3xl" />
-                        <span className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-[#3FB9A0]/25 blur-3xl" />
-                        <Quote className="relative h-10 w-10 text-[#9FE3CF]" aria-hidden />
 
-                        <blockquote className="relative mt-6">
-                            <p className="text-2xl font-semibold leading-snug tracking-tight">{featured.title}</p>
-                            <p className="mt-4 leading-relaxed text-title/75">“{featured.story}”</p>
-                        </blockquote>
-
-                        <figcaption className="relative mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-white/15 pt-6">
-                            <div className="flex items-center gap-3">
-                                <Avatar story={featured} size="lg" />
-                                <div>
-                                    <p className="font-semibold">{featured.customerName}</p>
-                                    <p className="text-sm text-title/60">
-                                        {[featured.country, featured.service].filter(Boolean).join(" · ")}
-                                    </p>
-                                </div>
-                            </div>
-                            <Stars value={featured.rating} size="lg" />
-                        </figcaption>
-                    </figure>
-
-                    {/* Other stories: grid on desktop, swipe on phones */}
-                    <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:col-span-3">
-                        {rest.map((s, i) => (
-                            <figure
-                                key={s.id}
-                                className={`flex w-[82%] shrink-0 snap-start flex-col justify-between rounded-3xl border border-white bg-white/85 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md sm:w-auto ${rest.length % 2 === 1 && i === rest.length - 1 ? "sm:col-span-2" : "" // last card fills the row
-                                    }`}
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between gap-3">
-                                        <Stars value={s.rating} />
-                                        {s.service && <ServiceTag>{s.service}</ServiceTag>}
-                                    </div>
-                                    <p className="mt-4 font-semibold text-title">{s.title}</p>
-                                    <blockquote className="mt-2 text-sm leading-relaxed text-ink/70">“{s.story}”</blockquote>
-                                </div>
-                                <figcaption className="mt-6 border-t border-navy-300/40 pt-4">
-                                    <Person story={s} />
-                                </figcaption>
-                            </figure>
-                        ))}
+                {stories.length > 1 && (
+                    <div className="hidden gap-2 sm:flex">
+                        <ArrowButton label="Previous story" disabled={active === 0} onClick={() => goTo(active - 1)}>
+                            <ChevronLeft className="h-5 w-5" />
+                        </ArrowButton>
+                        <ArrowButton label="Next story" disabled={active === stories.length - 1} onClick={() => goTo(active + 1)}>
+                            <ChevronRight className="h-5 w-5" />
+                        </ArrowButton>
                     </div>
-                </div>
+                )}
             </div>
+
+            {/* Cards: the one in the middle is big */}
+            <div
+                ref={track}
+                aria-roledescription="carousel"
+                className="relative mt-10 flex snap-x snap-mandatory items-center gap-5 overflow-x-auto px-[7.5%] py-8 [scrollbar-width:none] sm:px-[calc(50%_-_240px)] lg:px-[calc(50%_-_290px)] [&::-webkit-scrollbar]:hidden"
+            >
+                {stories.map((s, i) => {
+                    const isActive = i === active;
+                    const meta = [s.country, monthYear(s.storyDate)].filter(Boolean).join(" · ");
+                    return (
+                        <figure
+                            key={s.id}
+                            onClick={() => !isActive && goTo(i)}
+                            aria-roledescription="slide"
+                            aria-label={`${i + 1} of ${stories.length}`}
+                            className={cn(
+                                "relative isolate flex min-h-[340px] w-[85%] shrink-0 snap-center flex-col overflow-hidden rounded-3xl p-7 transition-all duration-500 ease-out sm:w-[480px] sm:p-9 lg:w-[580px]",
+                                isActive
+                                    ? "scale-100 bg-title text-white opacity-100 shadow-2xl shadow-title/25"
+                                    : "scale-[0.88] cursor-pointer border border-navy-300/40 bg-white text-ink opacity-60 hover:opacity-80",
+                            )}
+                        >
+                            {isActive && (
+                                <>
+                                    <span aria-hidden className="pointer-events-none absolute -right-20 -top-20 -z-10 h-64 w-64 rounded-full bg-[#5B7BEA]/40 blur-3xl" />
+                                    <span aria-hidden className="pointer-events-none absolute -bottom-24 -left-16 -z-10 h-64 w-64 rounded-full bg-[#3FB9A0]/30 blur-3xl" />
+                                </>
+                            )}
+
+                            <div className="flex items-center justify-between gap-3">
+                                <Quote className={cn("h-9 w-9", isActive ? "text-[#9FE3CF]" : "text-title/20")} aria-hidden />
+                                {s.service && (
+                                    <span
+                                        className={cn(
+                                            "rounded-full px-3 py-1 text-xs font-medium",
+                                            isActive ? "bg-white/10 text-white/90 ring-1 ring-white/15" : "bg-navy-50 text-title",
+                                        )}
+                                    >
+                                        {s.service}
+                                    </span>
+                                )}
+                            </div>
+
+                            <blockquote className="mt-6 flex-1">
+                                <p className={cn("font-semibold leading-snug tracking-tight", isActive ? "text-2xl" : "text-xl text-title")}>{s.title}</p>
+                                <p className={cn("mt-4 leading-relaxed", isActive ? "text-lg text-white/80" : "line-clamp-4 text-ink/70")}>“{s.story}”</p>
+                            </blockquote>
+
+                            <figcaption
+                                className={cn(
+                                    "mt-8 flex flex-wrap items-center justify-between gap-4 border-t pt-5",
+                                    isActive ? "border-white/15" : "border-navy-300/40",
+                                )}
+                            >
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <Avatar story={s} size="lg" />
+                                    <div className="min-w-0">
+                                        <p className={cn("truncate font-semibold", !isActive && "text-title")}>{s.customerName}</p>
+                                        {meta && (
+                                            <p className={cn("flex items-center gap-1 truncate text-sm", isActive ? "text-white/60" : "text-ink/55")}>
+                                                {s.country && <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />}
+                                                {meta}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <Stars value={s.rating} dark={isActive} />
+                            </figcaption>
+                        </figure>
+                    );
+                })}
+            </div>
+
+            {/* Dots */}
+            {stories.length > 1 && (
+                <div className="mt-4 flex justify-center gap-2">
+                    {stories.map((s, i) => (
+                        <button
+                            key={s.id}
+                            type="button"
+                            aria-label={`Show story ${i + 1}`}
+                            aria-current={i === active}
+                            onClick={() => goTo(i)}
+                            className={cn("h-2 rounded-full transition-all duration-300", i === active ? "w-8 bg-title" : "w-2 bg-navy-300 hover:bg-title/50")}
+                        />
+                    ))}
+                </div>
+            )}
         </section>
     );
-}
-export default Testimonials
+};
+
+export default Testimonials;

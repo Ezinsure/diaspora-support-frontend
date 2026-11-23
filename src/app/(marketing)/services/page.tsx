@@ -1,5 +1,4 @@
 import Options from "@/components/marketing/Options";
-import Services from "@/components/marketing/Services";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <main>
-      <Services as="h1" />
       <Options />
     </main>
   );

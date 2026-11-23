@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -25,20 +25,32 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { cn } from "../../../../lib/utils";
 
 const linkBase =
-  "relative inline-flex h-9 items-center rounded-md px-3 text-[0.94rem] text-ink/75 transition-colors hover:text-title focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-title/40";
+  "relative inline-flex h-9 items-center rounded-md px-3 text-[1.1rem] font-semibold text-ink/95 transition-colors hover:text-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-title/40";
 const activeLink =
   "font-medium text-title after:absolute after:inset-x-3 after:-bottom-[13px] after:h-[2px] after:rounded-full after:bg-title";
 
 const SiteHeader = () => {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
   const servicesActive = pathname.startsWith("/services");
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/80 ">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
+    <header className={cn(
+      "sticky top-0 z-40 transition-[background-color,box-shadow] duration-300",
+      scrolled ? "bg-white/75 shadow-sm backdrop-blur-md" : "bg-transparent",
+    )}>
+      <div className="mx-auto flex h-[72px]  max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
         <Link href="/" className="flex items-center">
           <Image
             src="/logo.png"
@@ -64,7 +76,7 @@ const SiteHeader = () => {
             <NavigationMenuItem>
               <NavigationMenuTrigger
                 className={cn(
-                  "h-9 bg-transparent px-3 text-[0.94rem] font-normal text-ink/75 hover:bg-transparent hover:text-title data-[state=open]:bg-transparent data-[popup-open]:bg-transparent",
+                  "h-9 bg-transparent px-3 text-[1.1rem] font-semibold text-ink/95 hover:bg-transparent hover:text-ink/85 data-[state=open]:bg-transparent data-[popup-open]:bg-transparent",
                   servicesActive && "font-medium text-title",
                 )}
               >
@@ -76,10 +88,10 @@ const SiteHeader = () => {
                     <li key={href}>
                       <NavigationMenuLink
                         href={href}
-                        className="flex flex-row items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm text-ink transition-colors hover:bg-navy-300/20 focus-visible:bg-navy-300/20"
+                        className="flex flex-row items-center gap-3 rounded-lg px-2.5 py-2.5 text-base text-ink transition-colors hover:bg-navy-300/20 focus-visible:bg-navy-300/20"
                       >
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-navy-300/25 text-title">
-                          <Icon className="h-4 w-4" />
+                          <Icon className="h-5 w-5" />
                         </span>
                         {title}
                       </NavigationMenuLink>

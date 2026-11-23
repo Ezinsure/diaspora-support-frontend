@@ -13,8 +13,8 @@ const HomePage = () => {
       <Services />
       <Options />
       <HowItWorks />
-      <Testimonials stories={PREVIEW_STORIES} />
-        <Pricing />
+      {/* <Testimonials stories={PREVIEW_STORIES} /> */}
+      <Pricing />
     </main>
   );
 }
