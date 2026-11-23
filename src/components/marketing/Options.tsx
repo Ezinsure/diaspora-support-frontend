@@ -18,7 +18,7 @@ const Options = () => {
                         Most  services can be applied for directly through official platforms.
                         Our service is completely optional.
                     </p>
-                    <p className="mt-8 max-w-md border-l-2 border-clay-600 pl-4 text-lg leading-relaxed text-white">
+                    <p className="mt-8 max-w-md font-semibold border-l-2 border-clay-600 pl-4 text-xl leading-relaxed text-white">
                         Standard Service Fees, where applicable, are separate. Our Fees covers only the private
                         assistance and support we provide.
                     </p>

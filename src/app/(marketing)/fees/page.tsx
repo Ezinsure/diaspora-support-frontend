@@ -42,7 +42,7 @@ export default async function FeesPage() {
     <main>
       <Pricing as="h1" showLink={false} />
 
-      <section className="py-20 lg:py-24">
+      <section id="faq" className="py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <h2 className="text-3xl font-semibold tracking-[-0.01em]">Good to know</h2>
           <FaqList fallback={fallbackDetails(price)} />

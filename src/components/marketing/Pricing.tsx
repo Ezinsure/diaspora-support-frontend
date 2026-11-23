@@ -36,7 +36,7 @@ export default async function Pricing({
               {price}
               <span className="text-2xl font-normal text-ink/60 sm:text-2.5xl"> {PRICING.unitLabel}</span>
             </p>
-            <p className="mt-4 max-w-md text-lg leading-relaxed text-ink/70">
+            <p className="mt-4 max-w-md text-lg leading-relaxed text-ink">
               The exact fee depends on your case. We confirm it with you before any work begins.
             </p>
 
@@ -62,7 +62,7 @@ export default async function Pricing({
           {/* Two separate lines */}
           <div>
             <FeeBreakdown />
-            <p className="mt-4 px-2 text-sm text-ink/60">
+            <p className="mt-4 px-2 text-sm text-ink/75">
               Our support Fee and any Standard Service Fee are always shown as two separate lines.
             </p>
           </div>

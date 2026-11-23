@@ -1,18 +1,21 @@
-import { BellRing, BookUser, FileBadge, IdCard } from "lucide-react";
+import {
+  Landmark,
+  IdCard,
+  Users,
+  Fingerprint,
+  Stamp,
+  Plane,
+} from "lucide-react";
 
 export const WHATSAPP_NUMBER = "250794766463";
-export const WHATSAPP_DISPLAY = "+250 794 766 463"; 
+export const WHATSAPP_DISPLAY = "+250 794 766 463";
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
   "Hello! I need help obtaining a document and would like you to handle it for me. Could you assist?",
 )}`;
 
 export const SUPPORT = {
-  // Only set to true if the team can genuinely answer around the clock.
-  is24x7: false,
-  // TODO: your real hours, or null to hide. Example: "Monday to Saturday, 8:00 to 20:00 (Kigali time)"
+  is24x7: true,
   hours: null as string | null,
-  // TODO: match the response time you have agreed internally
-  // responseTime: "We usually reply within a few hours.",
 };
 
 export const WHATSAPP_LABEL = SUPPORT.is24x7
@@ -21,49 +24,59 @@ export const WHATSAPP_LABEL = SUPPORT.is24x7
 
 export const CONTACT = {
   email: "diaspora@solektra.co",
-  phone: null as string | null, 
+  phone: null as string | null,
   address: "KABC 6th Floor ",
   city: "Kigali",
 };
 
 export const services = [
   {
-    title: "Passport Services",
-    href: "/services/passport",
-    icon: BookUser,
-    image: "/images/passpoort.png",
-    description: "New application, renewal, replacement and travel documents.",
+    title: "Immigration And Emigration Services",
+    href: "/services/immigration-and-emigration",
+    icon: Plane,
+    description: "e-Passports, laissez-passer and Rwandan nationality.",
   },
   {
-    title: "Birth Certificate Services",
-    href: "/services/birth-certificate",
-    icon: FileBadge,
-    image: "/images/birthcertimg.png",
-    description: "Application, certified copies, corrections and updates.",
-  },
-  {
-    title: "National ID Services",
-    href: "/services/national-id",
-    icon: IdCard,
-    image: "/images/idimage.png",
-    description: "New application, replacement, corrections and updates.",
-  },
-  {
-    title: "Notification Services",
-    href: "/services/notification",
-    icon: BellRing,
-    image: "/images/notificatimg.png",
+    title: "Family Services",
+    href: "/services/family",
+    icon: Users,
     description:
-      "Notifications, attestations and other official communications.",
+      "Birth, marriage, divorce, death and other civil status certificates.",
+  },
+  {
+    title: "Identification Services",
+    href: "/services/identification-documents",
+    icon: IdCard,
+    description:
+      "National ID applications, replacements, corrections and identity certificates.",
+  },
+  {
+    title: "Criminal Record and Investigation",
+    href: "/services/criminal-record-and-investigation",
+    icon: Fingerprint,
+    description:
+      "Criminal record, lost and theft, and fingerprint certificates.",
+  },
+  {
+    title: "Notarisation And Gazette Services",
+    href: "/services/notarisation-and-gazette",
+    icon: Stamp,
+    description: "Notary services and publications in the Official Gazette.",
+  },
+  {
+    title: "Foreign Affairs Consular Services",
+    href: "/services/foreign-affairs-consular-services",
+    icon: Landmark,
+    description: "Legalization of documents for use abroad or in Rwanda.",
   },
 ];
 
 export const navLinks = [
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Fees", href: "/fees" },
+  { label: "Faq", href: "/fees#faq" },
   { label: "Contact", href: "/contact" },
 ];
-
 
 export const whatsappLink = (message: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

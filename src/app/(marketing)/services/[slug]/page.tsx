@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Check, ChevronRight, ExternalLink, FileText, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { getServiceContent, serviceContent, sharedContent } from "@/lib/ServiiceContent";
-import { GUARANTEE_TEXT, PRICING, whatsappLink } from "@/lib/site";
+import { GUARANTEE_TEXT, PRICING, WHATSAPP_NUMBER, whatsappLink } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import FeeBreakdown from "@/components/marketing/FeeBreakdown";
 import { cn } from "../../../../../lib/utils";
@@ -31,29 +31,30 @@ export default async function ServicePage({ params }: Props) {
 
   return (
     <main>
-      {/* Header */}
-      <section className="border-b border-navy-300/40 py-14 lg:py-14">
+      <section className=" pt-14">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-ink/60">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-ink/60 ">
             <Link href="/services" className="hover:text-title">Services</Link>
             <ChevronRight className="h-3.5 w-3.5" />
             <span aria-current="page" className="text-ink">{service.name}</span>
           </nav>
-
-          <div className="mt-6 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">
-            <div>
+            <div className="my-4">
               <h1 className="text-3xl font-semibold tracking-[-0.02em] sm:text-5xl">{service.name}</h1>
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink/75">{service.intro}</p>
-              <ul className="mt-6 flex flex-wrap gap-2">
-                {service.helpWith.map((item) => (
-                  <li key={item} className="rounded-full bg-navy-50 px-3.5 py-1.5 text-sm text-title">{item}</li>
-                ))}
-              </ul>
-            </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="flex flex-col gap-3 lg:items-end">
-              <p className="text-sm text-ink/60">
-                Support {PRICING.fromLabel} <span className="font-semibold text-title"> {price} </span>. Standard Service Fees Separate
+      <section id="what-we-do" className="scroll-mt-24 border-b border-navy-300/40 py-14 lg:py-16">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <h2 className="text-2xl font-semibold tracking-[-0.01em] sm:text-3xl">What we can help you with</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <p className="mt-2 max-w-2xl text-ink/70">
+              Choose the service you need and message us. We&apos;ll review your case and tell you exactly what to prepare.
+            </p>
+            <div className="flex flex-col gap-3 lg:items-end ">
+              <p className="text-base text-ink/80">
+                Support {PRICING.fromLabel} <span className="font-semibold text-xl text-title"> {price} </span>. Standard Service Fees Separate
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a href={waLink} target="_blank" rel="noopener noreferrer"
@@ -65,8 +66,39 @@ export default async function ServicePage({ params }: Props) {
                   Start my request
                 </Link>
               </div>
-            </div>
-          </div>
+            </div></div>
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {service.services.map((s, i) => (
+              <li
+                key={s.name}
+                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white p-6 shadow-[0_4px_24px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]"
+              >
+                <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-[5rem] bg-primary/[0.04] transition-colors duration-300 group-hover:bg-primary/[0.06]" />
+                <div className="relative flex flex-1 flex-col">
+                  <h3 className="text-xl font-semibold leading-snug tracking-tight text-title">
+                    {s.name}
+                  </h3>
+                  <p className="mt-3 flex-1 text-[15px] leading-6 text-ink/75">
+                    {s.description}
+                  </p>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                      `Hello! I need help with ${s.name}.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 inline-flex w-fit items-center gap-2 rounded-full  px-4 py-2.5 text-sm font-medium text-green-700 transition-colors "
+                  >
+                    <WhatsAppIcon className="h-4 w-4" />
+                    Ask about this service
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">
+                      →
+                    </span>
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
