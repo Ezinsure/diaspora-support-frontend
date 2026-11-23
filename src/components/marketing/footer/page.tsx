@@ -97,6 +97,7 @@ const FooterPage = () => {
             {" "}· Kigali, Rwanda
           </p>
           <div className="flex gap-6">
+             <Link href="/refunds" className="transition-colors hover:text-white">Refund policy</Link>
             <Link href="/privacy" className="transition-colors hover:text-white">Privacy policy</Link>
             <Link href="/terms" className="transition-colors hover:text-white">Terms of service</Link>
           </div>

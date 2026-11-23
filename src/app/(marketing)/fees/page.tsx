@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Pricing from "@/components/marketing/Pricing";
 import FaqList from "@/components/marketing/FaqList";
 import { getSupportFee } from "@/lib/admin/supportFee";
+import Link from "next/link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { price } = await getSupportFee();
@@ -46,7 +47,7 @@ export default async function FeesPage() {
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <h2 className="text-3xl font-semibold tracking-[-0.01em]">Good to know</h2>
           <FaqList fallback={fallbackDetails(price)} />
-          {/* TODO: link to your written refund terms once published */}
+          <Link href="/refunds" className="transition-colors hover:text-white">Refund policy</Link>
         </div>
       </section>
     </main>
